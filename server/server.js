@@ -15,7 +15,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 
 app.get("/",(req,res)=>{
-    res.send("CISM Backend Running");
+    res.send("HELLO SNEHA TEST");
 });
 
 const PORT=process.env.PORT||5000;
