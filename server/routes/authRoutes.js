@@ -30,7 +30,7 @@ router.get("/teacher", protect, authorize("teacher"), (req, res) => {
 });
 
 
-router.get("/student", protect, authorize("student"), (req, res) => {
+router.get("/student", protect, authorize(""), (req, res) => {
     res.status(200).json({
         success: true,
         message: "Welcome Student!"
