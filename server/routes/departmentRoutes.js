@@ -9,15 +9,36 @@ const {
     deleteDepartment
 } = require("../controllers/departmentController");
 
+
+
+const {
+    auth,
+    isAdmin,
+    isTeacher,
+    isStudent
+} = require("../middleware/authMiddleware");
+
+
+
 // Test Route
 router.get("/test", (req, res) => {
     res.send("Department Route Working");
 });
 
+
+
+
 // Create Department
-router.post("/", createDepartment);
+router.post("/",auth,isAdmin,createDepartment);
 
 // Get All Departments
+router.get("/",auth,getDepartments);
+
+router.get("/:id",auth,getDepartmentById);
+
+router.put("/:id",isAdmin,updateDepartment);
+
+router.delete("/:id",isAdmin,deleteDepartment);
 
 
 module.exports = router;

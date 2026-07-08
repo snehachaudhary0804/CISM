@@ -11,7 +11,7 @@ const registerUser=async(req,res)=>{
             email,
             password,
             role,
-            employeId,
+            employeeId,
             rollNumber,
             department,
             section,
@@ -20,47 +20,54 @@ const registerUser=async(req,res)=>{
             
             
 
-            if(!name||!password||!role){
+            if(!name||!password||!role||!email){
                 return res.status(400).json({
                     success:false,
-                    message:"Name Password and Role are required."
+                    message:"Name, Password, Role and Email are required."
                 });
             }
             
 
 
-            if(!["student","techer","admin"].includes(role)){
+            if(!["student","teacher","admin"].includes(role)){
                 return res.status(400).json({
                     success:false,
                     message:"Invalid Role"
                 });
             }
+            
+            const emailExists = await User.findOne({ email });
 
+           if (emailExists) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Email already exists."
+                });
+            }
 
-
-
-            let exixtingUser;
+            
+            let existingUser;
             if(role==="student"){
                 if(!rollNumber){
                      return res.status(400).json({
                           success:false,
-                          message:"User alreday Existed with this Email"
+                          message:"RollNumber is required"
                     });
                 }
                  existingUser=await User.findOne({rollNumber});
             }
             else{
-                if(!employeId){
+                if(!employeeId){
                     return res.status(400).json({
                         success:false,
                         message:"EmployeeId is required."
                     });
                 }
-                 existingUser=await User.findOne({employeId});
+                 existingUser=await User.findOne({employeeId});
             }
             if(existingUser){
                 return res.status(400).json({
-                    status:false,
+                    success:false,
                     message:"User already EXisted"
                 });
             }
@@ -76,7 +83,7 @@ const registerUser=async(req,res)=>{
             email,
             password: hashedPassword,
             role,
-            employeId,
+            employeeId,
             rollNumber,
             department,
             section,
@@ -92,7 +99,7 @@ const registerUser=async(req,res)=>{
                 email:user.email,
                 role:user.role,
                 rollNumber:user.rollNumber,
-                employeId:user.employeId
+                employeeId:user.employeeId
             }
         });
     }
@@ -109,46 +116,18 @@ const registerUser=async(req,res)=>{
 const loginUser = async (req, res) => {
     try {
 
-        const { 
-             password,
-             role,
-             rollNumber,
-             employeId
+        const { email, password } = req.body;
 
-         } = req.body;
-
-        if(!role || !password){
+        // Validation
+        if (!email || !password) {
             return res.status(400).json({
-                success:false,
-                message:"role and Password are required"
-            });
-
-        }
-        let user ;
-        if(!role==="student"){
-            if(!rollNumber){
-                 return res.status(400).json({
-                    success:false,
-                    message:"Roll number is required"
-                 });
-            }
-                user=await User.findOne({rollNumber});
-        }
-        else if(role==="teacher" || role==="admin"){
-            if(!employeId){
-                return res.status(400).json({
-                    success:false,
-                    message:"EmployeId is required"
-                });
-            }
-            user=await User.findOne({employeId});
-        }
-        else{
-            return res.status(400).json({
-                success:false,
-                message:"Invalid Role"
+                success: false,
+                message: "Email and Password are required"
             });
         }
+
+        // Find User
+        const user = await User.findOne({ email });
 
         if (!user) {
             return res.status(404).json({
@@ -156,45 +135,41 @@ const loginUser = async (req, res) => {
                 message: "User not found"
             });
         }
-        if(user.role !=role){
-            return res.status(401).json({
-                success:false,
-                message:"Invalid role"
-            })
-        }
-    
+
+        // Compare Password
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.status(400).json({
+            return res.status(401).json({
                 success: false,
                 message: "Invalid Credentials"
             });
         }
 
-    
-        const token =generateToken(user._id);
+        // Generate JWT
+        const token = generateToken(user._id);
+
         res.status(200).json({
             success: true,
-            message: "Login successful",
+            message: "Login Successful",
             token,
             user: {
                 id: user._id,
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                rollNumber:user.rollNumber,
-                employeId:user.employeId
+                phone: user.phone,
+                profilePhoto: user.profilePhoto
             }
         });
 
     } catch (error) {
         console.error(error);
+
         res.status(500).json({
             success: false,
             message: error.message
         });
-
     }
 };
 const getProfile = async (req, res) => {

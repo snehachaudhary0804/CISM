@@ -7,12 +7,12 @@ const academicSessionSchema=new mongoose.Schema(
             required:true,
             trim:true
         },
-        startYear:{
-            type:Number,
+        startDate:{
+            type:Date,
             required:true
         },
-        endYear:{
-            type:Number,
+        endDate:{
+            type:Date,
             reqired:true
         },
         isActive:{

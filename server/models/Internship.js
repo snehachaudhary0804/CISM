@@ -8,13 +8,9 @@ const internshipSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    teacher:{
-      type:mongoose.Schema.Types.ObjectId,
-      ref:"User"
-    },
     department:{
       type:mongoose.Schema.Types.ObjectId,
-      ref:"Deaprtment"
+      ref:"Department"
     },
     academicSession:{
       type:mongoose.Schema.Types.ObjectId,
@@ -39,7 +35,7 @@ const internshipSchema = new mongoose.Schema(
       hrPhone:String,
       jobRole:String,
       mode:{
-        type:string,
+        type:String,
         enum:["remote","on-site","hybrid"]
       },
       stipend:Number,
@@ -50,13 +46,13 @@ const internshipSchema = new mongoose.Schema(
     },
     inHouseDetails:{
       mentor:{
-        type:momgoose.Schema.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:"User"
       },
-      projectTitle:string,
+      projectTitle:String,
       batch:String,
-      startDate:date,
-      endDate:date,
+      startDate:Date,
+      endDate:Date,
       duration:Number,
     },
     noc:{
@@ -75,9 +71,9 @@ const internshipSchema = new mongoose.Schema(
         default:""
       },
     },
-    documnents:{
+    documents:{
       internshipReport:{
-        type:string,
+        type:String,
         default:""
       },
 
@@ -85,7 +81,7 @@ const internshipSchema = new mongoose.Schema(
        type:String
       },
       presentation:{
-        type:string,
+        type:String,
         default:""
       },
 
@@ -100,15 +96,15 @@ const internshipSchema = new mongoose.Schema(
     },
     teacherReview:{
       status:{
-        type:string,
+        type:String,
         enum:["Pending", "Approved", "Rejected"],
         default:"Pending"
       },
       remarks:{
-        type:string,
+        type:String,
         default:""
       },
-      reviewdAt:Date
+      reviewedAt:Date
     },
     completion: {
       status: {

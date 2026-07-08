@@ -37,5 +37,13 @@ const nocSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
+nocSchema.index(
+    {
+        internship: 1,
+        student: 1
+    },
+    {
+        unique: true
+    }
+);
 module.exports = mongoose.model("NOC", nocSchema);

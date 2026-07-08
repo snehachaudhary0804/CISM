@@ -4,11 +4,12 @@ const dotenv =require("dotenv");
 const connectDB=require("./config/db")
 const authRoutes = require("./routes/authRoutes");
 const departmentRoutes = require("./routes/departmentRoutes");
-
-
-
-
-
+const academicSessionRoutes = require("./routes/academicSessionRoutes");
+const internshipRoutes = require("./routes/internshipRoutes");
+const domainRoutes = require("./routes/domainRoutes");
+const sectionRoutes = require("./routes/sectionRoutes");
+const nocRoutes = require("./routes/nocRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 
 dotenv.config();   
@@ -20,8 +21,12 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/departments", departmentRoutes);
-
-
+app.use("/api/academic-sessions", academicSessionRoutes);
+app.use("/api/internships", internshipRoutes);
+app.use("/api/domains", domainRoutes);
+app.use("/api/sections", sectionRoutes);
+app.use("/api/nocs", nocRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 
 app.get("/",(req,res)=>{

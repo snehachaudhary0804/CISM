@@ -41,22 +41,29 @@ const userSchema=new mongoose.Schema({
            return this.role === "student";
         },
         trim:true,
-        sparse:true
+        
     
     },
     department:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Department",
-        required:true
+        required: function () {
+              return this.role === "student" || this.role === "teacher";
+        }
     },
     section: {
        type:mongoose.Schema.Types.ObjectId,
        ref: "Section",
-       required:true
+        required: function () {
+              return this.role === "student";
+        }
     },
     academicSession:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"AcademicSession"
+        ref:"AcademicSession",
+         required: function () {
+              return this.role === "student";
+    }
     },
     semester: {
          type: Number,

@@ -16,9 +16,7 @@ const sectionSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    createdAt:{
 
-    }
     
 },
 {
