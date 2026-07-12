@@ -10,7 +10,7 @@ const domainRoutes = require("./routes/domainRoutes");
 const sectionRoutes = require("./routes/sectionRoutes");
 const nocRoutes = require("./routes/nocRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
-
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 dotenv.config();   
 connectDB();
@@ -27,7 +27,7 @@ app.use("/api/domains", domainRoutes);
 app.use("/api/sections", sectionRoutes);
 app.use("/api/nocs", nocRoutes);
 app.use("/api/notifications", notificationRoutes);
-
+app.use("/api/dashboard", dashboardRoutes);
 
 app.get("/",(req,res)=>{
     res.send("HELLO SNEHA TEST");

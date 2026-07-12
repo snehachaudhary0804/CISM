@@ -26,7 +26,7 @@ const {
 } = require("../middleware/authMiddleware");
 
 // Admin
-router.post("/",auth, isAdmin, createInternships);
+router.post("/",auth, isStudent, createInternships);
 
 router.get("/", auth, isAdmin, getAllInternships);
 

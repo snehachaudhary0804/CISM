@@ -1,8 +1,9 @@
 const Internship=require("../models/Internship");
 const User=require("../models/User");
 const Department=require("../models/Department");
-const AcadmicSession=require("../models/AcademicSession");
+const AcademicSession=require("../models/AcademicSession");
 const Domain = require("../models/Domain");
+const Notification = require("../models/Notification");
 
 exports.createInternships=async(req,res)=>{
     try{
@@ -26,17 +27,31 @@ exports.createInternships=async(req,res)=>{
                     message:"please fill all required fields"
                 });
             }
-          
+               // Validate internship type details
+
+          if (internshipType === "External" && !externalDetails) {
+              return res.status(400).json({
+                   success: false,
+                   message: "External internship details are required."
+               });
+          }
+
+          if (internshipType === "In-House" && !inHouseDetails) {
+               return res.status(400).json({
+                   success: false,
+                   message: "In-House internship details are required."
+               });
+          }
             
-            const departmentExists=await Department.findoneById(department);
-            if(!DepartmentExists){
+            const departmentExists=await Department.findById(department);
+            if(!departmentExists){
                 return res.status(404).json({
                     success:false,
                     message:"Department not found"
                 });
             }
             
-            const sessionExists=await AcademicSession.findoneById(academicSession);
+            const sessionExists=await AcademicSession.findById(academicSession);
             if(!sessionExists){
                 return res.status(404).json({
                     success:false,
@@ -49,6 +64,17 @@ exports.createInternships=async(req,res)=>{
                     success: false,
                     message: "Domain not found.",
                   });
+            }
+            const existingInternship = await Internship.findOne({
+                    student,
+                    status: { $ne: "Rejected" }
+                  });
+
+            if (existingInternship) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Student already has an active internship.",
+               });
             }
             const internship=await Internship.create({
                  student,
@@ -63,7 +89,7 @@ exports.createInternships=async(req,res)=>{
             return res.status(201).json({
                  success: true,
                  message: "Internship created successfully.",
-                 data: internship,
+                 data: internship
            });
             
     }
@@ -99,7 +125,7 @@ exports.getInternshipById = async (req, res) => {
   try {
     const internship = await Internship.findById(req.params.id)
       .populate("student")
-      .populate("teacher")
+      .populate("teacherAssignment.teacher")
       .populate("department")
       .populate("academicSession")
       .populate("domain");
@@ -139,6 +165,7 @@ exports.updateInternship = async (req, res) => {
         message: "Internship not found.",
       });
     }
+   
 
     return res.status(200).json({
       success: true,
@@ -191,25 +218,38 @@ exports.assignTeacher = async (req, res) => {
       });
     }
 
-    const teacher = await User.findById(teacherId);
+    const teacher = await User.findOne({
+         _id: teacherId,
+         role: "teacher",
+    });
 
-    if (!teacher || teacher.role !== "Teacher") {
+    if (!teacher || teacher.role !== "teacher") {
       return res.status(404).json({
         success: false,
         message: "Teacher not found",
       });
     }
 
-    internship.teacher = teacherId;
+  
 
     internship.teacherAssignment = {
       teacher: teacherId,
       assignedAt: new Date(),
     };
 
-    internship.status = "Teacher Assigned";
+    internship.teacherReview.status ="Pending";
 
     await internship.save();
+    
+     const notification = await Notification.create({
+    sender: req.user._id,
+    receiver: teacherId,
+    title: "New Internship Assigned",
+    message: "You have been assigned a new internship for review.",
+    type: "Internship"
+});
+
+console.log("Notification created:", notification);
 
     return res.status(200).json({
       success: true,
@@ -238,7 +278,12 @@ exports.updateNOCStatus = async (req, res) => {
         message: "Internship not found",
       });
     }
-
+     if (!["Pending", "Approved", "Rejected"].includes(status)) {
+          return res.status(400).json({
+             success: false,
+             message: "Invalid NOC status.",
+        });
+    }
     internship.noc.status = status;
     internship.noc.remark = remark || "";
     internship.noc.issueDate = new Date();
@@ -288,16 +333,26 @@ exports.teacherReview = async (req, res) => {
         success: false,
         message: "Internship not found",
       });
-
     }
-
-    internship.teacherReview = {
-
-      status,
-      remarks,
-      reviewedAt: new Date(),
-
-    };
+      if (
+          !internship.teacherAssignment.teacher ||
+           internship.teacherAssignment.teacher.toString() !== req.user._id.toString()
+        ) {
+             return res.status(403).json({
+                 success: false,
+                 message: "You are not assigned to this internship.",
+           });
+          }
+    
+     if (!["Approved", "Rejected"].includes(status)) {
+           return res.status(400).json({
+              success: false,
+              message: "Invalid review status.",
+         });
+      }
+       internship.teacherReview.status = status;
+       internship.teacherReview.remarks = remarks;
+       internship.teacherReview.reviewedAt = new Date();
 
     if (status === "Approved") {
       internship.status = "Teacher Approved";
@@ -308,7 +363,13 @@ exports.teacherReview = async (req, res) => {
     }
 
     await internship.save();
-
+     await Notification.create({
+        sender: req.user._id,
+        receiver: teacherId,
+        title: "New Internship Assigned",
+        message: "You have been assigned a new internship for review.",
+        type: "Internship"
+     });
     return res.status(200).json({
       success: true,
       message: "Review submitted successfully",
@@ -384,7 +445,7 @@ exports.getStudentInternships = async (req, res) => {
     const internships = await Internship.find({
       student: req.user._id,
     })
-      .populate("teacher", "name email")
+      .populate("teacherAssignment.teacher", "name email")
       .populate("department")
       .populate("academicSession")
       .populate("domain");
@@ -408,9 +469,8 @@ exports.getStudentInternships = async (req, res) => {
 
 };
 exports.getTeacherInternships = async (req, res) => {
-
   try {
-
+    console.log(req.user);
     const internships = await Internship.find({
       "teacherAssignment.teacher": req.user._id,
     })

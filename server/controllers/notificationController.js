@@ -27,7 +27,7 @@ const createNotification = async (req, res) => {
         }
 
         const notification = await Notification.create({
-            sender: req.user.id,
+            sender: req.user._id,
             receiver,
             title,
             message,
@@ -75,7 +75,7 @@ const getMyNotifications = async (req, res) => {
     try {
 
         const notifications = await Notification.find({
-            receiver: req.user.id
+            receiver: req.user._id
         })
         .populate("sender", "name email role")
         .sort({ createdAt: -1 });
@@ -100,7 +100,10 @@ const markAsRead = async (req, res) => {
 
         const { id } = req.params;
 
-        const notification = await Notification.findById(id);
+        const notification = await Notification.findById({
+            _id:id,
+            reciever:req.user._id
+        });
 
         if (!notification) {
             return res.status(404).json({
@@ -133,7 +136,11 @@ const deleteNotification = async (req, res) => {
 
         const { id } = req.params;
 
-        const notification = await Notification.findById(id);
+        const notification = await Notification.findById({
+            _id:id,
+            reciever:req.user._id
+
+        });
 
         if (!notification) {
             return res.status(404).json({
