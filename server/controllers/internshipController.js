@@ -150,14 +150,10 @@ exports.getInternshipById = async (req, res) => {
 };
 exports.updateInternship = async (req, res) => {
   try {
-    const internship = await Internship.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+   const internship = await Internship.findOne({
+    _id: req.params.id,
+    student: req.user._id
+   });
 
     if (!internship) {
       return res.status(404).json({
@@ -165,7 +161,15 @@ exports.updateInternship = async (req, res) => {
         message: "Internship not found.",
       });
     }
-   
+     if (
+  internship.status !== "Applied" &&
+  internship.status !== "Rejected"
+) {
+  return res.status(400).json({
+    success: false,
+    message: "Approved internship cannot be updated."
+  });
+}
 
     return res.status(200).json({
       success: true,
@@ -182,7 +186,10 @@ exports.updateInternship = async (req, res) => {
 
 exports.deleteInternship = async (req, res) => {
   try {
-    const internship = await Internship.findById(req.params.id);
+    const internship = await Internship.findOne({
+    _id: req.params.id,
+    student: req.user._id
+    });
 
     if (!internship) {
       return res.status(404).json({
@@ -190,6 +197,15 @@ exports.deleteInternship = async (req, res) => {
         message: "Internship not found.",
       });
     }
+    if (
+    internship.status !== "Applied" &&
+    internship.status !== "Rejected"
+) {
+    return res.status(400).json({
+        success:false,
+        message:"Approved internship cannot be deleted."
+    });
+}
 
     await internship.deleteOne();
 
@@ -317,6 +333,9 @@ exports.updateNOCStatus = async (req, res) => {
 
   }
 };
+
+
+
 exports.teacherReview = async (req, res) => {
 
   try {
@@ -365,7 +384,7 @@ exports.teacherReview = async (req, res) => {
     await internship.save();
      await Notification.create({
         sender: req.user._id,
-        receiver: teacherId,
+        receiver: internship.student,
         title: "New Internship Assigned",
         message: "You have been assigned a new internship for review.",
         type: "Internship"

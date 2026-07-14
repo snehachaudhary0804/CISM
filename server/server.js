@@ -11,6 +11,9 @@ const sectionRoutes = require("./routes/sectionRoutes");
 const nocRoutes = require("./routes/nocRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const studentRoutes = require("./routes/studentRoutes");
+const teacherRoutes = require("./routes/teacherRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 dotenv.config();   
 connectDB();
@@ -28,6 +31,9 @@ app.use("/api/sections", sectionRoutes);
 app.use("/api/nocs", nocRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/student", studentRoutes);
+app.use("/api/teacher", teacherRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/",(req,res)=>{
     res.send("HELLO SNEHA TEST");
