@@ -1,5 +1,9 @@
 const User = require("../models/User");
 const Internship = require("../models/Internship");
+const Department = require("../models/Department");
+const Section = require("../models/Section");
+const NOC = require("../models/NOC");
+const Notification = require("../models/Notification");
 exports.adminDashboard = async (req, res) => {
   try {
 

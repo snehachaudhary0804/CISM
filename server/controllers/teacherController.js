@@ -8,17 +8,17 @@ exports.getDashboard = async (req, res) => {
     const teacherId = req.user.id;
 
     const internships = await Internship.find({
-      "teacherAssignment": teacherId,
+      "teacherAssignment.teacher": teacherId,
     })
-      .populate("student","name rollnumber email ")
+      .populate("student","name rollNumber email ")
       .populate("domain","domainName");
 
     const pending = internships.filter(
-      i => i.status === "Pending"
+      i => i.status === "Teacher Assigned"
     ).length;
 
     const approved = internships.filter(
-      i => i.status === "Approved"
+      i => i.status === "Teacher Approved"
     ).length;
 
     const rejected = internships.filter(
