@@ -18,10 +18,10 @@ const {
 router.post("/", auth, isAdmin, createNOC);
 
 // Get All NOCs
-router.get("/", auth, getAllNOCs);
+router.get("/", auth,isAdmin, getAllNOCs);
 
 // Get NOC By ID
-router.get("/:id", auth, getNOCById);
+router.get("/:id", auth,isAdmin, getNOCById);
 
 // Issue NOC
 router.put("/:id/issue", auth, isAdmin, issueNOC);

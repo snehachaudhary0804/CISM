@@ -151,9 +151,7 @@ exports.getInternshipById = async (req, res) => {
 exports.updateInternship = async (req, res) => {
   try {
    const internship = await Internship.findOne({
-    _id: req.params.id,
-    student: req.user._id
-   });
+    _id:req.params.id});
 
     if (!internship) {
       return res.status(404).json({
@@ -170,6 +168,9 @@ exports.updateInternship = async (req, res) => {
     message: "Approved internship cannot be updated."
   });
 }
+    Object.assign(internship, req.body);
+
+    const updatedInternship = await internship.save();
 
     return res.status(200).json({
       success: true,
@@ -245,18 +246,24 @@ exports.assignTeacher = async (req, res) => {
         message: "Teacher not found",
       });
     }
+     const updatedInternship = await Internship.findByIdAndUpdate(
+  internshipId,
+  {
+    $set: {
+      "teacherAssignment.teacher": teacherId,
+      "teacherAssignment.assignedAt": new Date(),
+      "teacherReview.status": "Pending",
+      status: "Teacher Assigned",
+    },
+  },
+  { new: true, runValidators: true }
+);
 
-  
-
-    internship.teacherAssignment = {
-      teacher: teacherId,
-      assignedAt: new Date(),
-    };
-
-    internship.teacherReview.status ="Pending";
-
-    await internship.save();
-    
+return res.status(200).json({
+  success: true,
+  message: "Teacher assigned successfully",
+  data: updatedInternship,
+});
      const notification = await Notification.create({
     sender: req.user._id,
     receiver: teacherId,
@@ -417,7 +424,10 @@ exports.submitCompletion = async (req, res) => {
       presentation,
     } = req.body;
 
-    const internship = await Internship.findById(internshipId);
+    const internship = await Internship.findOne({
+  _id: internshipId,
+  student: req.user._id,
+});
 
     if (!internship) {
 
@@ -427,6 +437,12 @@ exports.submitCompletion = async (req, res) => {
       });
 
     }
+    if (internship.completion.status === "Submitted") {
+  return res.status(400).json({
+    success: false,
+    message: "Completion has already been submitted.",
+  });
+}
 
     internship.documents = {
       internshipReport,

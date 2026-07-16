@@ -1,10 +1,20 @@
+const mongoose = require("mongoose");
 const NOC = require("../models/NOC");
 const Internship = require("../models/Internship");
 const User = require("../models/User");
+
 const createNOC = async (req, res) => {
     try {
         const { internship, student } = req.body;
-
+         if (
+    !mongoose.Types.ObjectId.isValid(internship) ||
+    !mongoose.Types.ObjectId.isValid(student)
+) {
+    return res.status(400).json({
+        success: false,
+        message: "Invalid Internship or Student ID."
+    });
+}
         if (!internship || !student) {
             return res.status(400).json({
                 success: false,
@@ -22,7 +32,12 @@ const createNOC = async (req, res) => {
         }
 
         const studentExists = await User.findById(student);
-
+        if (internshipExists.student.toString() !== student) {
+    return res.status(400).json({
+        success: false,
+        message: "This internship does not belong to the selected student."
+    });
+}
         if (!studentExists || studentExists.role !== "student") {
             return res.status(404).json({
                 success: false,
@@ -66,7 +81,7 @@ const getAllNOCs = async (req, res) => {
     try {
         const nocs = await NOC.find()
             .populate("student", "name email rollNumber")
-            .populate("internship", "companyName internshipTitle")
+            .populate("internship")
             .populate("issuedBy", "name email")
             .sort({ createdAt: -1 });
 
@@ -88,7 +103,12 @@ const getAllNOCs = async (req, res) => {
 const getNOCById = async (req, res) => {
     try {
         const { id } = req.params;
-
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+        success: false,
+        message: "Invalid NOC ID."
+    });
+}
         const noc = await NOC.findById(id)
             .populate("student", "name email rollNumber")
             .populate("internship", "companyName internshipTitle")
@@ -119,6 +139,12 @@ const issueNOC = async (req, res) => {
     try {
         const { id } = req.params;
         const { nocFile } = req.body;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+        success: false,
+        message: "Invalid NOC ID."
+    });
+}
 
         const noc = await NOC.findById(id);
 
@@ -163,7 +189,12 @@ const issueNOC = async (req, res) => {
 const deleteNOC = async (req, res) => {
     try {
         const { id } = req.params;
-
+         if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+        success: false,
+        message: "Invalid NOC ID."
+    });
+}
         const noc = await NOC.findById(id);
 
         if (!noc) {

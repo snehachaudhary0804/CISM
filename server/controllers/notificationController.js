@@ -1,5 +1,8 @@
 const Notification = require("../models/Notification");
 const User = require("../models/User");
+const mongoose = require("mongoose");
+
+
 
 const createNotification = async (req, res) => {
     try {
@@ -99,10 +102,15 @@ const markAsRead = async (req, res) => {
     try {
 
         const { id } = req.params;
-
-        const notification = await Notification.findById({
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+        success: false,
+        message: "Invalid Notification ID."
+    });
+}
+        const notification = await Notification.findOne({
             _id:id,
-            reciever:req.user._id
+            receiver: req.user._id
         });
 
         if (!notification) {
@@ -135,10 +143,15 @@ const deleteNotification = async (req, res) => {
     try {
 
         const { id } = req.params;
-
-        const notification = await Notification.findById({
+         if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+        success: false,
+        message: "Invalid Notification ID."
+    });
+}
+        const notification = await Notification.findOne({
             _id:id,
-            reciever:req.user._id
+            receiver: req.user._id
 
         });
 

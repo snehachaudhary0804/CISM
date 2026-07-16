@@ -27,6 +27,6 @@ router.get("/my", auth, getMyNotifications);
 router.put("/:id/read", auth, markAsRead);
 
 // Delete Notification
-router.delete("/:id", auth, isAdmin, deleteNotification);
+router.delete("/:id", auth, deleteNotification);
 
 module.exports = router;
