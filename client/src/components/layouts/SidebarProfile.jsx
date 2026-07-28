@@ -20,7 +20,9 @@ return (
 className="
 border-t
 border-blue-600
-p-4
+p-5
+pb-8
+bg-blue-700
 "
 >
 

@@ -3,22 +3,30 @@ import {
   FaBell,
   FaChevronDown,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
+const Header = ({
+  role = "admin",
+  user,
+}) => {
 
 
-
-const Header = () => {
-
-  
   const [open, setOpen] = useState(false);
-
-
+const navigate = useNavigate();
+const { logout } = useAuth();
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
   });
-
+const dashboardTitle =
+  role === "student"
+    ? "Student Dashboard"
+    : role === "teacher"
+    ? "Teacher Dashboard"
+    : "Admin Dashboard";
 
   return (
 
@@ -60,7 +68,7 @@ const Header = () => {
               text-blue-700
             "
           >
-            Admin Dashboard
+           {dashboardTitle}
           </h1>
 
 
@@ -89,13 +97,6 @@ const Header = () => {
             gap-3
           "
         >
-
-
-
-          
-
-
-
           {/* Notification */}
 
           <button
@@ -178,32 +179,25 @@ const Header = () => {
                   font-bold
                 "
               >
-                A
+               {user?.name?.charAt(0).toUpperCase() || "A"}
               </div>
 
 
 
               <div className="hidden md:block text-left">
 
-                <h3
-                  className="
-                    font-bold
-                    text-slate-800
-                  
-                  "
-                >
-                  Administrator
-                </h3>
+               <h3 className="font-bold text-slate-800">
+ {user?.name || "Administrator"}
+</h3>
 
 
-                <p
-                  className="
-                    text-xs
-                    text-slate-500
-                  "
-                >
-                  Admin
-                </p>
+               <p className="text-xs text-slate-500">
+  {role === "student"
+    ? "Student"
+    : role === "teacher"
+    ? "Teacher"
+    : "Admin"}
+</p>
 
 
               </div>
@@ -238,47 +232,78 @@ const Header = () => {
                   "
                 >
 
-                  <button
-                    className="
-                      w-full
-                      text-left
-                      px-5
-                      py-3
-                      hover:bg-blue-50
-                      
-                    "
-                  >
-                    Profile
-                  </button>
+                 <button
+                 onClick={() => {
 
+    if(role === "admin"){
+        navigate("/admin/profile");
+    }
+    else if(role === "teacher"){
+        navigate("/teacher/profile");
+    }
+    else{
+        navigate("/student/profile");
+    }
 
-                  <button
-                    className="
-                      w-full
-                      text-left
-                      px-5
-                      py-3
-                      hover:bg-slate-100
-                      dark:hover:bg-slate-800
-                    "
-                  >
-                    Settings
-                  </button>
+    setOpen(false);
 
+}}
+  className="
+    w-full
+    text-left
+    px-5
+    py-3
+    hover:bg-blue-50
+  "
+>
+  Profile
+</button>
 
-                  <button
-                    className="
-                      w-full
-                      text-left
-                      px-5
-                      py-3
-                      text-red-500
-                      hover:bg-red-50
-                    "
-                  >
-                    Logout
-                  </button>
+                 <button
+  onClick={() => {
 
+    if(role === "admin"){
+        navigate("/admin/settings");
+    }
+    else if(role === "teacher"){
+        navigate("/teacher/settings");
+    }
+    else{
+        navigate("/student/settings");
+    }
+
+    setOpen(false);
+
+}}
+className="
+    w-full
+    text-left
+    px-5
+    py-3
+    hover:bg-slate-100
+  "
+>
+  Settings
+</button>
+         <button
+onClick={() => {
+
+    logout();
+
+    navigate("/login");
+
+}}
+  className="
+    w-full
+    text-left
+    px-5
+    py-3
+    text-red-500
+    hover:bg-red-50
+  "
+>
+  Logout
+</button>
 
                 </div>
 

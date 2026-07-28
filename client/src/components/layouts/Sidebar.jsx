@@ -12,11 +12,101 @@ import {
   FaChartBar,
   FaBell,
 } from "react-icons/fa";
-
+import {User} from "lucide-react";
 import SidebarMenu from "./SidebarMenu";
 import SidebarProfile from "./SidebarProfile";
 
+const adminMenus = {
+  main: [
+    {
+      name: "Dashboard",
+      path: "/admin/dashboard",
+      icon: FaTachometerAlt,
+    },
+  ],
 
+  management: [
+    {
+      name: "Students",
+      path: "/admin/students",
+      icon: FaUsers,
+    },
+    {
+      name: "Teachers",
+      path: "/admin/teachers",
+      icon: FaChalkboardTeacher,
+    },
+    {
+      name: "Departments",
+      path: "/admin/departments",
+      icon: FaBuilding,
+    },
+    {
+      name: "Sections",
+      path: "/admin/sections",
+      icon: FaLayerGroup,
+    },
+    {
+      name: "Domains",
+      path: "/admin/domains",
+      icon: FaLaptopCode,
+    },
+    {
+      name: "Sessions",
+      path: "/admin/sessions",
+      icon: FaCalendarAlt,
+    },
+  ],
+
+  analytics: [
+    {
+      name: "Reports",
+      path: "/admin/reports",
+      icon: FaChartBar,
+    },
+  ],
+
+  system: [
+    {
+      name: "Notifications",
+      path: "/admin/notifications",
+      icon: FaBell,
+    },
+  ],
+};
+const studentMenus = {
+  main: [
+    {
+      name: "Dashboard",
+      path: "/student/dashboard",
+      icon: FaTachometerAlt,
+    },
+  ],
+
+  management: [
+    {
+      name: "My Internship",
+      path: "/student/internship",
+      icon: FaLaptopCode,
+    },
+   {
+    name:"Profile",
+     path:"/student/profile",
+     icon:<User/>
+    }
+   
+  ],
+
+
+
+  system: [
+    {
+      name: "Notifications",
+      path: "/student/notifications",
+      icon: FaBell,
+    },
+  ],
+};
 const mainMenu = [
   {
     name:"Dashboard",
@@ -77,18 +167,76 @@ const systemMenu = [
   },
 ];
 
+// STUDENT MENU
+
+const studentMainMenu = [
+  {
+    name:"Dashboard",
+    path:"/student/dashboard",
+    icon:FaTachometerAlt,
+  },
+];
 
 
-const Sidebar = () => {
+const studentManagementMenu = [
+  {
+    name:"My Internship",
+    path:"/student/internship",
+    icon:FaLaptopCode,
+  },
+  {
+    name:"Documents",
+    path:"/student/documents",
+    icon:FaBuilding,
+  },
+  {
+    name:"NOC Status",
+    path:"/student/noc",
+    icon:FaCalendarAlt,
+  },
+];
+
+
+const studentSystemMenu = [
+  {
+    name:"Notifications",
+    path:"/student/notifications",
+    icon:FaBell,
+  },
+];
+
+const Sidebar = ({
+  role = "admin",
+  user,
+}) => {
 
 const [collapsed,setCollapsed] = useState(false);
+const main =
+  role === "student" ? studentMainMenu : mainMenu;
 
+const management =
+  role === "student"
+    ? studentManagementMenu
+    : managementMenu;
 
+const analytics =
+  role === "student"
+    ? []
+    : analyticsMenu;
+
+const system =
+  role === "student"
+    ? studentSystemMenu
+    : systemMenu;
+
+    
 return (
 
 <aside
 className={`
 ${collapsed ? "w-24" : "w-64"}
+h-screen
+flex-shrink-0
 transition-all
 duration-300
 bg-blue-700
@@ -144,6 +292,25 @@ mt-1
 >
 Internship Portal
 </p>
+<span
+  className="
+    inline-block
+    mt-3
+    px-3
+    py-1
+    rounded-full
+    bg-blue-600
+    text-white
+    text-xs
+    font-semibold
+  "
+>
+  {role === "student"
+    ? "Student"
+    : role === "teacher"
+    ? "Teacher"
+    : "Administrator"}
+</span>
 
 
 </div>
@@ -181,35 +348,36 @@ flex-1
 overflow-y-auto
 px-4
 py-6
-space-y-3
 "
 >
 
-
+<div className="space-y-3">
 <SidebarMenu
-title="Main"
-items={mainMenu}
-collapsed={collapsed}
+ title="Main"
+ items={main}
+ collapsed={collapsed}
 />
 
 
 <SidebarMenu
 title="Management"
-items={managementMenu}
+items={management}
 collapsed={collapsed}
 />
 
 
-<SidebarMenu
-title="Analytics"
-items={analyticsMenu}
-collapsed={collapsed}
-/>
+{role !== "student" && analytics.length > 0 && (
+  <SidebarMenu
+    title="Analytics"
+    items={analytics}
+    collapsed={collapsed}
+  />
+)}
 
 
 <SidebarMenu
 title="System"
-items={systemMenu}
+items={system}
 collapsed={collapsed}
 />
 
@@ -217,20 +385,30 @@ collapsed={collapsed}
 </div>
 
 
-
+</div>
 
 
 {/* Profile */}
 
-<SidebarProfile
-collapsed={collapsed}
-user={{
-name:"Administrator",
-role:"Admin",
-}}
+<div className="mt-auto">
+  <SidebarProfile
+  collapsed={collapsed}
+  user={{
+    name:
+      user?.name ||
+      (role === "student"
+        ? "Student"
+        : "Administrator"),
+
+    role:
+      role === "student"
+        ? "Student"
+        : role === "teacher"
+        ? "Teacher"
+        : "Admin",
+  }}
 />
-
-
+</div>
 </aside>
 
 

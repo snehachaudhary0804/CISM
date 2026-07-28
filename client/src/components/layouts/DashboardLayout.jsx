@@ -1,58 +1,55 @@
-import Sidebar from "./Sidebar";
 import Header from "./Header";
+import Sidebar from "./Sidebar";
 import { Outlet } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 
-const DashboardLayout = () => {
+const DashboardLayout = ({
+  children,
+}) => {
+
+  const { user } = useAuth();
+
 
   return (
-
-    <div className="flex min-h-screen bg-slate-50 transition-colors duration-300">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
 
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar 
+        role={user?.role} 
+        user={user}
+      />
 
 
       {/* Main Area */}
       <div className="flex-1 min-w-0 flex flex-col">
 
 
-        {/* Header */}
-        <Header />
+        <Header 
+          role={user?.role} 
+          user={user}
+        />
 
 
-        {/* Content */}
         <main
           className="
             flex-1
-            
-            overflow-x-hidden
-            px-4
-            
-            py-4
-            
+            overflow-y-auto
             bg-slate-50
+            px-8
+            py-8
           "
         >
 
-          
-
-            <Outlet />
-
-        
-
+          {children ? children : <Outlet />}
 
         </main>
 
 
       </div>
 
-
     </div>
-
   );
-
 };
-
 
 export default DashboardLayout;

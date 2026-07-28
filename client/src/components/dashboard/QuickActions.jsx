@@ -12,96 +12,77 @@ const actions = [
   {
     title: "Add Student",
     icon: UserPlus,
-    color: "from-blue-600 to-blue-700",
+    iconBg: "bg-blue-100",
+    iconColor: "text-blue-600",
   },
   {
     title: "Add Teacher",
     icon: GraduationCap,
-    color: "from-blue-500 to-indigo-600",
+    iconBg: "bg-green-100",
+    iconColor: "text-green-600",
   },
   {
     title: "Add Department",
     icon: Building2,
-    color: "from-cyan-500 to-blue-600",
+    iconBg: "bg-purple-100",
+    iconColor: "text-purple-600",
   },
   {
     title: "Generate Report",
     icon: FileSpreadsheet,
-    color: "from-slate-600 to-slate-700",
+    iconBg: "bg-orange-100",
+    iconColor: "text-orange-600",
   },
   {
     title: "Send Notification",
     icon: Bell,
-    color: "from-sky-500 to-blue-600",
+    iconBg: "bg-pink-100",
+    iconColor: "text-pink-600",
   },
   {
     title: "Assign Internship",
     icon: Briefcase,
-    color: "from-blue-500 to-cyan-600",
+    iconBg: "bg-cyan-100",
+    iconColor: "text-cyan-600",
   },
 ];
-
 
 const QuickActions = () => {
 
   return (
 
     <div
-      className="
-        bg-white
-        rounded-2xl
-        border
-        border-slate-200
-        shadow-md
-        shadow-md
+     className="
+bg-white
+rounded-2xl
+border
+border-slate-200
+p-6
+shadow-md
 hover:shadow-xl
 transition-all
 duration-300
-        overflow-hidden
-      "
+"
     >
 
 
       {/* Header */}
 
-      <div
-        className="
-          px-6
-          py-5
-          border-b
-          min-w-0
-          text-center
-          border-slate-200
-          
-        "
-      >
+     <h2 className="text-xl font-extrabold text-slate-800">
+  Quick Actions
+</h2>
 
-       
-
-
-        <p
-          className="
-            text-sm
-            text-slate-500
-            mt-3
-            leading-relaxed
-            break-words
-          "
-        >
-          Frequently used administrator actions
-        </p>
-
-
-      </div>
-
-
+<p className="text-sm text-slate-500 mt-1 mb-6">
+  Frequently used administrator actions
+</p>
 {/* Action Buttons */}
 
 <div
   className="
-    flex
-    flex-wrap
-    justify-center
+   grid
+    grid-cols-1
+    sm:grid-cols-2
+    lg:grid-cols-3
     gap-5
     p-6
   "
@@ -112,44 +93,48 @@ duration-300
       const Icon = action.icon;
 
       return (
+<button
+                key={index}
+                className="
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  gap-3
+                  p-5
+                  rounded-xl
+                  bg-slate-50
+                  hover:bg-slate-100
+                  transition
+                "
+              >
 
-        <button
-          key={index}
-          className={`
-            bg-gradient-to-r
-            ${action.color}
-            text-white
-            rounded-2xl
-            p-5
-            h-[140px]
-            w-[220px]
-            flex
-            flex-col
-            items-center
-            justify-center
-            hover:-translate-y-1
-            hover:scale-[1.02]
-            hover:shadow-xl
-            transition-all
-            duration-300
-          `}
-        >
+                <div
+                  className={`
+                    ${action.color}
+                    p-3
+                    rounded-xl
+                  `}
+                >
 
-          <Icon size={32}/>
+                  <Icon size={25}/>
 
-          <h3
-            className="
-              mt-3
-              text-base
-              font-bold
-              leading-snug
-              text-left
-            "
-          >
-            {action.title}
-          </h3>
+                </div>
 
-        </button>
+
+                <span
+                  className="
+                    text-sm
+                    font-bold
+                    text-slate-700
+                    text-center
+                  "
+                >
+                  {action.title}
+                </span>
+
+
+              </button>
 
       );
 

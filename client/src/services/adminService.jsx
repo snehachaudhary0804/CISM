@@ -34,3 +34,19 @@ export const getDashboardData = async () => {
   const response = await API.get("/admin/dashboard");
   return response.data;
 };
+
+export const getAllDepartments = async () => {
+  const response = await API.get("/departments");
+  return response.data;
+};
+
+export const getAllSections = async () => {
+  const response = await API.get("/sections");
+  return response.data;
+};
+
+export const getAllAcademicSessions = async () => {
+  const response = await API.get("/academic-sessions");
+  return response.data;
+};
+

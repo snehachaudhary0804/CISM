@@ -1,19 +1,37 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 import NotificationTable from "../../components/tables/NotificationTable";
+import NotificationModal from "../../components/common/NotificationModal";
 
 const Notifications = () => {
 
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-
+const [openModal, setOpenModal] = useState(false);
+const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetchNotifications();
   }, []);
 
+const handleDelete = async (id) => {
+  try {
+    await api.delete(`/notifications/${id}`);
+    fetchNotifications();
+  } catch (error) {
+    console.error(error.response?.data || error);
+  }
+};
 
+const handleMarkAsRead = async (id) => {
+  try {
+    await api.patch(`/notifications/${id}/read`);
+    fetchNotifications();
+  } catch (error) {
+    console.error(error.response?.data || error);
+  }
+};
   const fetchNotifications = async () => {
 
     try {
@@ -82,9 +100,12 @@ const Notifications = () => {
         </div>
 
 
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold">
-          + Send Notification
-        </button>
+       <button
+  onClick={() => setShowModal(true)}
+  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold"
+>
+  + Send Notification
+</button>
 
 
       </div>
@@ -132,7 +153,11 @@ const Notifications = () => {
           :
 
           (
-            <NotificationTable notifications={filteredNotifications}/>
+            <NotificationTable
+  notifications={filteredNotifications}
+  onDelete={handleDelete}
+  onMarkAsRead={handleMarkAsRead}
+/>
           )
 
         }
@@ -140,7 +165,11 @@ const Notifications = () => {
 
       </div>
 
-
+<NotificationModal
+  show={showModal}
+  onClose={() => setShowModal(false)}
+  onSuccess={fetchNotifications}
+/>
     </div>
 
   );

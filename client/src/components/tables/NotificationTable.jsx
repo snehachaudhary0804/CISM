@@ -3,8 +3,11 @@ import {
   Check,
   Trash2,
 } from "lucide-react";
-
-const NotificationTable = ({ notifications }) => {
+const NotificationTable = ({
+  notifications,
+  onDelete,
+  onMarkAsRead,
+}) => {
 
   if (!notifications?.length) {
     return (
@@ -111,6 +114,7 @@ const NotificationTable = ({ notifications }) => {
                   </button>
 
                   <button
+                  onClick={() => onMarkAsRead(notification._id)}
                     className="rounded-lg bg-green-100 p-2 text-green-700 hover:bg-green-200 transition"
                     title="Mark as Read"
                   >
@@ -118,6 +122,7 @@ const NotificationTable = ({ notifications }) => {
                   </button>
 
                   <button
+                  onClick={() => onDelete(notification._id)}
                     className="rounded-lg bg-red-100 p-2 text-red-700 hover:bg-red-200 transition"
                     title="Delete"
                   >

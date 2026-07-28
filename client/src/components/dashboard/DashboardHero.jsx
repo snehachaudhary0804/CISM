@@ -1,4 +1,12 @@
-const DashboardHero = ({ user = "Administrator" }) => {
+const DashboardHero = ({
+  user = "Administrator",
+  subtitle = "Monitor internship applications, approvals, NOC requests, departments and student progress from one centralized dashboard.",
+  overviewTitle = "Today's Overview",
+  overviewValue = "24",
+  overviewText = "Pending Internship Reviews",
+  buttonText = "Review Requests",
+  onButtonClick,
+}) => {
   return (
     <div
       className="
@@ -64,21 +72,20 @@ const DashboardHero = ({ user = "Administrator" }) => {
           </h1>
 
 
-          <p
-            className="
-              mt-4
-              px-2
-              max-w-xl
-              mx-auto
-              text-center
-              text-blue-100
-              leading-7
-              text-base
-            "
-          >
-            Monitor internship applications, approvals, NOC requests,
-            departments and student progress from one centralized dashboard.
-          </p>
+         <p
+  className="
+    mt-4
+    px-2
+    max-w-xl
+    mx-auto
+    text-center
+    text-blue-100
+    leading-7
+    text-base
+  "
+>
+  {subtitle}
+</p>
 
         </div>
 
@@ -102,55 +109,40 @@ const DashboardHero = ({ user = "Administrator" }) => {
           "
         >
 
-          <p className="text-blue-100 text-sm font-semibold ">
-            Today's Overview
-          </p>
+          <p className="text-blue-100 text-sm font-semibold">
+  {overviewTitle}
+</p>
 
 
-          <h2
-            className="
-              mt-3
-              text-3xl
-              md:text-4xl
-              leading-none
-              font-extrabold
-            "
-          >
-            24
-          </h2>
+          <h2 className="mt-3 text-3xl md:text-4xl leading-none font-extrabold">
+  {overviewValue}
+</h2>
 
 
-          <p
-            className="
-              mt-3
-              text-blue-100
-              leading-relaxed
-              text-sm
-              break-words
-            "
-          >
-            Pending Internship Reviews
-          </p>
+          <p className="mt-3 text-blue-100 leading-relaxed text-sm break-words">
+  {overviewText}
+</p>
 
 
-          <button
-            className="
-              mt-6
-              w-full
-              max-w-[260px]
-              rounded-xl
-              bg-white
-              px-5
-              py-3
-              text-blue-700
-              font-bold
-              whitespace-nowrap
-              hover:bg-slate-100
-              transition
-            "
-          >
-            Review Requests
-          </button>
+         <button
+  onClick={onButtonClick}
+  className="
+    mt-6
+    w-full
+    max-w-[260px]
+    rounded-xl
+    bg-white
+    px-5
+    py-3
+    text-blue-700
+    font-bold
+    whitespace-nowrap
+    hover:bg-slate-100
+    transition
+  "
+>
+  {buttonText}
+</button>
 
 
         </div>

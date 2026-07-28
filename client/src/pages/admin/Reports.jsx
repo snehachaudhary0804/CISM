@@ -11,49 +11,33 @@ import {
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 import ReportTable from "../../components/tables/ReportTable";
+import ReportModal from "../../components/common/ReportModal";
 
 
-
-
-
-
-const stats = [
-  {
-    title:"Total Students",
-    value:320,
-    icon:Users,
-    color:"bg-blue-100 text-blue-600",
-  },
-
-  {
-    title:"Teachers",
-    value:24,
-    icon:GraduationCap,
-    color:"bg-green-100 text-green-600",
-  },
-
-  {
-    title:"Internships",
-    value:286,
-    icon:Briefcase,
-    color:"bg-purple-100 text-purple-600",
-  },
-
-  {
-    title:"NOCs Issued",
-    value:241,
-    icon:FileCheck,
-    color:"bg-orange-100 text-orange-600",
-  },
-];
 
 
 
 const Reports = () => {
-
+  
   const [reports, setReports] = useState([]);
-const [loading, setLoading] = useState(true);
-useEffect(() => {
+  const [loading, setLoading] = useState(true);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+const [selectedSession, setSelectedSession] = useState("");
+const [selectedStatus, setSelectedStatus] = useState("");
+const [stats, setStats] = useState({
+  students: 0,
+  teachers: 0,
+  internships: 0,
+  nocs: 0,
+});
+  const [selectedReport,setSelectedReport]=useState(null);
+const [showModal,setShowModal]=useState(false);
+
+const handleView=(report)=>{
+    setSelectedReport(report);
+    setShowModal(true);
+};
+  useEffect(() => {
   fetchReports();
 }, []);
 
@@ -68,7 +52,26 @@ const fetchReports = async () => {
 
     console.log("Reports:", res.data);
 
-    setReports(res.data.data);
+    
+    const internships = res.data.data;
+
+setStats({
+  students: new Set(
+    internships.map((i) => i.student?._id)
+  ).size,
+
+  teachers: new Set(
+    internships
+      .filter((i) => i.teacherAssignment?.teacher)
+      .map((i) => i.teacherAssignment.teacher._id)
+  ).size,
+
+  internships: internships.length,
+
+  nocs: internships.filter(
+    (i) => i.noc?.status === "Approved"
+  ).length,
+});
 
   } catch(error){
 
@@ -82,7 +85,35 @@ const fetchReports = async () => {
 
   }
 
-};return (
+};
+const reportCards = [
+  {
+    title: "Total Students",
+    value: stats.students,
+    icon: Users,
+    color: "bg-blue-100 text-blue-600",
+  },
+  {
+    title: "Teachers",
+    value: stats.teachers,
+    icon: GraduationCap,
+    color: "bg-green-100 text-green-600",
+  },
+  {
+    title: "Internships",
+    value: stats.internships,
+    icon: Briefcase,
+    color: "bg-purple-100 text-purple-600",
+  },
+  {
+    title: "NOCs Issued",
+    value: stats.nocs,
+    icon: FileCheck,
+    color: "bg-orange-100 text-orange-600",
+  },
+];
+
+return (
 
 <div className="space-y-8">
 
@@ -193,7 +224,7 @@ gap-6
 
 
 {
-stats.map((item,index)=>{
+reportCards.map((item,index)=>{
 
 const Icon=item.icon;
 
@@ -276,13 +307,23 @@ overflow-hidden
 
  :
 
- <ReportTable reports={reports}/>
+ <ReportTable
+  reports={reports}
+  onView={handleView}
+/>
 
 }
 
 
 </div>
-
+<ReportModal
+  show={showModal}
+  report={selectedReport}
+  onClose={() => {
+    setShowModal(false);
+    setSelectedReport(null);
+  }}
+/>
 
 
 </div>

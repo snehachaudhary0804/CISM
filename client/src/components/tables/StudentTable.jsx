@@ -3,7 +3,12 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-const StudentTable = ({ students }) => {
+const StudentTable = ({
+  students,
+  onView,
+  onEdit,
+  onDelete,
+}) => {
   if (!students?.length) {
     return (
       <div className="text-center py-10 text-gray-500">
@@ -21,9 +26,11 @@ const StudentTable = ({ students }) => {
           <th className="px-6 py-4 text-left text-sm font-bold text-blue-700 uppercase tracking-wide">Name</th>
           <th className="px-6 py-4 text-left text-sm font-bold text-blue-700 uppercase tracking-wide">Department</th>
           <th className="px-6 py-4 text-left text-sm font-bold text-blue-700 uppercase tracking-wide">Section</th>
+          <th className="px-6 py-4 text-center text-sm font-bold text-blue-700 uppercase tracking-wide">Academic Session</th>
           <th className="px-6 py-4 text-left text-sm font-bold text-blue-700 uppercase tracking-wide">Semester</th>
           <th className="px-6 py-4 text-left text-sm font-bold text-blue-700 uppercase tracking-wide">Teacher</th>
           <th className="px-6 py-4 text-center text-sm font-bold text-blue-700 uppercase tracking-wide">Action</th>
+        
         </tr>
       </thead>
 
@@ -48,17 +55,19 @@ const StudentTable = ({ students }) => {
             </td>
 
             <td className="px-5 py-4">
-              {student.department?.departmentName}
+              {student.department?.departmentName || "-"}
             </td>
 
             <td className="px-5 py-4">
               {student.section?.sectionName}
             </td>
+            <td className="px-5 py-4">
+  {student.academicSession?.sessionName || "N/A"}
+</td>
 
             <td className="px-5 py-4">
               {student.semester}
             </td>
-
             <td className="px-5 py-4">
               {student.assignedTeacher?.name || (
                 <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
@@ -68,24 +77,30 @@ const StudentTable = ({ students }) => {
             </td>
 
             <td className="px-6 py-4 text-center">
-  <div className="flex items-center justify-center gap-2">
-    <button className="rounded-lg bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 hover:bg-blue-200 transition">
-      <Eye size={16} />
-         View
-    </button>
+             <div className="flex items-center justify-center gap-2">
+               <button
+                  onClick={() => onView(student)} 
+                  className="rounded-lg bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 hover:bg-blue-200 transition">
+                 <Eye size={16} />
+                    View
+               </button>
 
-    <button className="rounded-lg bg-green-100 px-3 py-1 text-sm font-medium text-green-700 hover:bg-green-200 transition">
-      <Pencil size={16} />
-      Edit
+                <button
+                onClick={() => onEdit(student)}
+                className="rounded-lg bg-green-100 px-3 py-1 text-sm font-medium text-green-700 hover:bg-green-200 transition">
+                  <Pencil size={16} />
+                  Edit
     
-    </button>
+                </button>
 
-    <button className="rounded-lg bg-red-100 px-3 py-1 text-sm font-medium text-red-700 hover:bg-red-200 transition">
-    <Trash2 size={16} />
-      Delete
-    </button>
-  </div>
-</td>
+                  <button
+                  onClick={() => onDelete(student._id)}
+                  className="rounded-lg bg-red-100 px-3 py-1 text-sm font-medium text-red-700 hover:bg-red-200 transition">
+                  <Trash2 size={16} />
+                    Delete
+                  </button>
+              </div>
+              </td>
           </tr>
         ))}
       </tbody>

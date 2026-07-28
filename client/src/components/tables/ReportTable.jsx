@@ -4,7 +4,10 @@ import {
 } from "lucide-react";
 
 
-const ReportTable = ({ reports }) => {
+const ReportTable = ({
+  reports,
+  onView,
+}) => {
 
 
   if (!reports?.length) {
@@ -188,7 +191,7 @@ const ReportTable = ({ reports }) => {
 
 
               <td className="px-6 py-4">
-                {report.teacher?.name || "-"}
+                {report.teacherAssignment?.teacher?.name || "-"}
               </td>
 
 
@@ -207,7 +210,7 @@ const ReportTable = ({ reports }) => {
 
 
               <td className="px-6 py-4 text-center">
-                {nocBadge(report.noc)}
+                {nocBadge(report.noc?.status)}
               </td>
 
 
@@ -218,6 +221,7 @@ const ReportTable = ({ reports }) => {
 
 
                   <button
+                     onClick={() => onView(report)}
                     className="
                     rounded-lg
                     bg-blue-100
