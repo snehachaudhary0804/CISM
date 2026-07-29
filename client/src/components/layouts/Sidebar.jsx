@@ -109,64 +109,60 @@ const studentMenus = {
 };
 const mainMenu = [
   {
-    name:"Dashboard",
-    path:"/admin/dashboard",
-    icon:FaTachometerAlt,
+    name: "Dashboard",
+    path: "/admin/dashboard",
+    icon: FaTachometerAlt,
   },
 ];
-
 
 const managementMenu = [
   {
-    name:"Students",
-    path:"/admin/students",
-    icon:FaUsers,
+    name: "Students",
+    path: "/admin/students",
+    icon: FaUsers,
   },
   {
-    name:"Teachers",
-    path:"/admin/teachers",
-    icon:FaChalkboardTeacher,
+    name: "Teachers",
+    path: "/admin/teachers",
+    icon: FaChalkboardTeacher,
   },
   {
-    name:"Departments",
-    path:"/admin/departments",
-    icon:FaBuilding,
+    name: "Departments",
+    path: "/admin/departments",
+    icon: FaBuilding,
   },
   {
-    name:"Sections",
-    path:"/admin/sections",
-    icon:FaLayerGroup,
+    name: "Sections",
+    path: "/admin/sections",
+    icon: FaLayerGroup,
   },
   {
-    name:"Domains",
-    path:"/admin/domains",
-    icon:FaLaptopCode,
+    name: "Domains",
+    path: "/admin/domains",
+    icon: FaLaptopCode,
   },
   {
-    name:"Sessions",
-    path:"/admin/sessions",
-    icon:FaCalendarAlt,
+    name: "Sessions",
+    path: "/admin/sessions",
+    icon: FaCalendarAlt,
   },
 ];
-
 
 const analyticsMenu = [
   {
-    name:"Reports",
-    path:"/admin/reports",
-    icon:FaChartBar,
+    name: "Reports",
+    path: "/admin/reports",
+    icon: FaChartBar,
   },
 ];
-
 
 const systemMenu = [
   {
-    name:"Notifications",
-    path:"/admin/notifications",
-    icon:FaBell,
+    name: "Notifications",
+    path: "/admin/notifications",
+    icon: FaBell,
   },
 ];
-
 // STUDENT MENU
 
 const studentMainMenu = [
@@ -204,7 +200,43 @@ const studentSystemMenu = [
     icon:FaBell,
   },
 ];
+// TEACHER MENU
 
+const teacherMainMenu = [
+  {
+    name:"Dashboard",
+    path:"/teacher/dashboard",
+    icon:FaTachometerAlt,
+  },
+];
+
+
+const teacherManagementMenu = [
+  {
+    name:"Assigned Internships",
+    path:"/teacher/internships",
+    icon:FaLaptopCode,
+  },
+  {
+    name:"Students",
+    path:"/teacher/students",
+    icon:FaUsers,
+  },
+  {
+    name:"NOC Requests",
+    path:"/teacher/noc",
+    icon:FaBuilding,
+  },
+];
+
+
+const teacherSystemMenu = [
+  {
+    name:"Notifications",
+    path:"/teacher/notifications",
+    icon:FaBell,
+  },
+];
 const Sidebar = ({
   role = "admin",
   user,
@@ -212,24 +244,30 @@ const Sidebar = ({
 
 const [collapsed,setCollapsed] = useState(false);
 const main =
-  role === "student" ? studentMainMenu : mainMenu;
+  role === "student"
+    ? studentMainMenu
+    : role === "teacher"
+    ? teacherMainMenu
+    : mainMenu;
 
 const management =
   role === "student"
     ? studentManagementMenu
+    : role === "teacher"
+    ? teacherManagementMenu
     : managementMenu;
 
 const analytics =
-  role === "student"
-    ? []
-    : analyticsMenu;
+  role === "admin"
+    ? analyticsMenu
+    : [];
 
 const system =
   role === "student"
     ? studentSystemMenu
+    : role === "teacher"
+    ? teacherSystemMenu
     : systemMenu;
-
-    
 return (
 
 <aside
@@ -395,10 +433,12 @@ collapsed={collapsed}
   collapsed={collapsed}
   user={{
     name:
-      user?.name ||
-      (role === "student"
-        ? "Student"
-        : "Administrator"),
+  user?.name ||
+  (role === "student"
+    ? "Student"
+    : role === "teacher"
+    ? "Teacher"
+    : "Administrator"),
 
     role:
       role === "student"

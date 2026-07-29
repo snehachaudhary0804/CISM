@@ -22,7 +22,8 @@ import Notifications from "../pages/admin/Notifications";
 import AdminProfile from "../pages/admin/AdminProfile";
 import AdminSettings from "../pages/admin/AdminSettings";
 // Teacher
-
+import Internships from "../pages/teacher/Internships";
+import TeacherDashboard from "../pages/teacher/Dashboard";
 
 // Student
 import StudentDashboard from "../pages/student/Dashboard";
@@ -57,7 +58,19 @@ const AppRoutes = () => {
 
       {/* ---------------- TEACHER ---------------- */}
       <Route element={<ProtectedRoute allowedRoles={["teacher"]} />}>
-      
+        <Route element={<DashboardLayout />}>
+
+    <Route 
+      path="/teacher/dashboard" 
+      element={<TeacherDashboard />} 
+    />
+
+    <Route 
+      path="/teacher/internships" 
+      element={<Internships />} 
+    />
+
+  </Route>
       </Route>
 
       {/* ---------------- STUDENT ---------------- */}
