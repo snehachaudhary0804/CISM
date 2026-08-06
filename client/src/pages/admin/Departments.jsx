@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../services/api";
 import DepartmentTable from "../../components/tables/DepartmentTable";
 import DepartmentModal from "../../components/common/DepartmentModal";
-
+import DepartmentViewModal from "../../components/common/DepartmentViewModal";
 
 
 const Departments = () => {
@@ -10,6 +10,8 @@ const Departments = () => {
 const [loading, setLoading] = useState(true);
 const [search, setSearch] = useState("");
 const [showModal, setShowModal] = useState(false);
+const [selectedDepartment, setSelectedDepartment] = useState(null);
+const [viewOpen, setViewOpen] = useState(false);
 const [formData, setFormData] = useState({
   departmentName: "",
   departmentCode: "",
@@ -96,7 +98,10 @@ const handleEdit = (department) => {
   setShowModal(true);
 };
 
-
+const handleView = (department) => {
+  setSelectedDepartment(department);
+  setViewOpen(true);
+};
 const handleDelete = async (id) => {
   const confirmDelete = window.confirm(
     "Are you sure you want to delete this department?"
@@ -205,8 +210,9 @@ const handleDelete = async (id) => {
       Loading Departments...
     </div>
   ) : (
-    <DepartmentTable
+  <DepartmentTable
   departments={filteredDepartments}
+  onView={handleView}
   onEdit={handleEdit}
   onDelete={handleDelete}
 />
@@ -222,6 +228,11 @@ const handleDelete = async (id) => {
   setFormData={setFormData}
   editingDepartment={editingDepartment}
   onSubmit={handleSubmit}
+/>
+<DepartmentViewModal
+  isOpen={viewOpen}
+  onClose={() => setViewOpen(false)}
+  department={selectedDepartment}
 />
     </div>
     

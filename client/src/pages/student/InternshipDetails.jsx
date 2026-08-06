@@ -9,46 +9,11 @@ import {
 import {
   CheckCircle
 } from "lucide-react";
+import { UserCheck } from "lucide-react";
 
-
-
-
-import ProgressTimeline from "./ProgressTimeline";
 
 
 const InternshipDetails = ({  internship, timeline }) => {
-const steps = internship ? [
-  {
-    title: "Internship Applied",
-    description: "Application submitted",
-    completed: true
-  },
-  {
-    title: "Teacher Assigned",
-    description: internship.teacherAssignment?.teacher?.name
-      ? "Teacher assigned"
-      : "Waiting for teacher",
-    completed: !!internship.teacherAssignment?.teacher
-  },
-  {
-    title: "Teacher Review",
-    description: internship.teacherReview?.status || "Pending",
-    completed:
-      internship.teacherReview?.status === "Approved"
-  },
-  {
-    title: "NOC Approval",
-    description: internship.noc?.status || "Pending",
-    completed:
-      internship.noc?.status === "Approved"
-  },
-  {
-    title: "Completion",
-    description: internship.completion?.status || "Pending",
-    completed:
-      internship.completion?.status === "Submitted"
-  }
-] : [];
 
 
 
@@ -73,7 +38,6 @@ const steps = internship ? [
     );
   }
 
-console.log("Steps:", steps);
   return (
     <div
       className="
@@ -158,15 +122,15 @@ console.log("Steps:", steps);
 
         <DetailItem
           icon={BriefcaseBusiness}
-          label="Type"
+          label="Internship Type"
           value={internship.internshipType}
         />
 
-          <DetailItem
-            icon={CheckCircle}
-            label="Status"
-            value={internship.status}
-       />
+         <DetailItem
+  icon={UserCheck}
+  label="Faculty Mentor"
+  value={internship.teacherAssignment?.teacher?.name}
+/>
         <DetailItem
           icon={MapPin}
           label="Mode"
@@ -199,7 +163,7 @@ console.log("Steps:", steps);
 
       </div>
 
-       <ProgressTimeline steps={steps}/>
+       
      
     </div>
 

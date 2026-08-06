@@ -2,7 +2,7 @@ const DashboardHero = ({
   user = "Administrator",
   subtitle = "Monitor internship applications, approvals, NOC requests, departments and student progress from one centralized dashboard.",
   overviewTitle = "Today's Overview",
-  overviewValue = "24",
+  overviewValue = 0,
   overviewText = "Pending Internship Reviews",
   buttonText = "Review Requests",
   onButtonClick,

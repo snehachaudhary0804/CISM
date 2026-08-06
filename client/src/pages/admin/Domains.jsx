@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import api from "../../services/api";
 import DomainTable from "../../components/tables/DomainTable";
 import DomainModal from "../../components/common/DomainModal";
+import DomainViewModal from "../../components/common/DomainViewModal";
+
+
 
 const Domains = () => {
 
@@ -9,7 +12,8 @@ const Domains = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
  const [showModal, setShowModal] = useState(false);
-
+ const [showViewModal, setShowViewModal] = useState(false);
+const [selectedDomain, setSelectedDomain] = useState(null);
 const [editingDomain, setEditingDomain] = useState(null);
 
 const [formData, setFormData] = useState({
@@ -17,9 +21,6 @@ const [formData, setFormData] = useState({
   description: "",
 });
 
-  useEffect(() => {
-    fetchDomains();
-  }, []);
 
 
   const fetchDomains = async () => {
@@ -92,14 +93,15 @@ const handleDelete = async (id) => {
 
   try {
     await api.delete(`/domains/${id}`);
-
     fetchDomains();
-
   } catch (err) {
     console.log(err.response?.data || err);
   }
 };
-
+const handleView = (domain) => {
+  setSelectedDomain(domain);
+  setShowViewModal(true);
+};
 
   const filteredDomains = domains.filter(
     (domain) =>
@@ -107,7 +109,10 @@ const handleDelete = async (id) => {
         ?.toLowerCase()
         .includes(search.toLowerCase())
   );
-
+ 
+  useEffect(() => {
+    fetchDomains();
+  }, []);
 
   return (
 
@@ -211,8 +216,9 @@ const handleDelete = async (id) => {
           :
 
           (
-            <DomainTable
+       <DomainTable
   domains={filteredDomains}
+  onView={handleView}
   onEdit={handleEdit}
   onDelete={handleDelete}
 />
@@ -230,6 +236,11 @@ const handleDelete = async (id) => {
   setFormData={setFormData}
   editingDomain={editingDomain}
   onSubmit={handleSubmit}
+/>
+<DomainViewModal
+  show={showViewModal}
+  onClose={() => setShowViewModal(false)}
+  domain={selectedDomain}
 />
     </div>
 

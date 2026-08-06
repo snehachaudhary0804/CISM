@@ -27,6 +27,7 @@ const StudentModal = ({
   setFormData,
   editingStudent,
   fetchStudents,
+  updateStudent
 }) => {
   const [departments, setDepartments] = useState([]);
   const [sections, setSections] = useState([]);
@@ -65,35 +66,33 @@ const StudentModal = ({
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      setLoading(true);
+  try {
 
-      if (editingStudent) {
-  await updateStudent(editingStudent._id, formData);
-} else {
-  await registerUser({
-    ...formData,
-    role: "student",
-  });
-}
+    if (editingStudent) {
 
-      fetchStudents();
-      onClose();
-    } catch (err) {
-      console.error(err);
-
-      alert(
-        err?.response?.data?.message ||
-          "Something went wrong."
+      await updateStudent(
+        editingStudent._id,
+        formData
       );
-    } finally {
-      setLoading(false);
-    }
-  };
 
+      alert("Student updated successfully");
+
+    } 
+
+    fetchStudents();
+
+    onClose();
+
+  } catch(error) {
+
+    console.error(error);
+    alert("Failed to update student");
+
+  }
+};
   if (!open) return null;
     return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">

@@ -1,64 +1,28 @@
 import { Eye } from "lucide-react";
 
 
-const applications = [
-  {
-    id: 1,
-    student: "Sneha Chaudhary",
-    company: "Infosys",
-    type: "External",
-    teacher: "Dr. Sharma",
-    status: "Approved",
-  },
-  {
-    id: 2,
-    student: "Rahul Kumar",
-    company: "TCS",
-    type: "External",
-    teacher: "Prof. Gupta",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    student: "Anjali Singh",
-    company: "College Lab",
-    type: "In-House",
-    teacher: "Dr. Verma",
-    status: "Rejected",
-  },
-  {
-    id: 4,
-    student: "Aman Yadav",
-    company: "Wipro",
-    type: "External",
-    teacher: "Prof. Mishra",
-    status: "Approved",
-  },
-];
-
-
 const getStatusColor = (status) => {
-
-  switch(status){
-
-    case "Approved":
+  switch (status) {
+    case "Completed":
       return "bg-green-100 text-green-700";
-
-    case "Pending":
-      return "bg-yellow-100 text-yellow-700";
 
     case "Rejected":
       return "bg-red-100 text-red-700";
 
+    case "Teacher Assigned":
+      return "bg-blue-100 text-blue-700";
+
+    case "Completion Submitted":
+      return "bg-purple-100 text-purple-700";
+
+    case "NOC Approved":
+      return "bg-emerald-100 text-emerald-700";
+
     default:
-      return "bg-gray-100 text-gray-700";
+      return "bg-yellow-100 text-yellow-700";
   }
-
 };
-
-
-
-const RecentApplications = () => {
+const RecentApplications = ({ internships = [] }) => {
 
 return (
 
@@ -193,10 +157,10 @@ Action
 
 
 {
-applications.map((app)=>(
+internships.map((app)=>(
 
 <tr
-key={app.id}
+key={app._id}
 className="
 border-t
 border-slate-100
@@ -215,7 +179,7 @@ text-slate-800
 whitespace-nowrap
 "
 >
-{app.student}
+{app.student?.name}
 </td>
 
 
@@ -227,19 +191,19 @@ py-5
 whitespace-nowrap
 "
 >
-{app.company}
+{app.externalDetails?.companyName || "-"}
 </td>
 
 
 
 <td className="px-6 py-5">
-{app.type}
+{app.internshipType}
 </td>
 
 
 
 <td className="px-6 py-5 whitespace-nowrap">
-{app.teacher}
+{app.teacherAssignment?.teacher?.name || "Not Assigned"}
 </td>
 
 

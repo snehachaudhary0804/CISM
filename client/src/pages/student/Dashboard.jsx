@@ -3,7 +3,6 @@ import DashboardHero from "../../components/dashboard/DashboardHero";
 import StatCard from "../../components/dashboard/StatCard";
 import InternshipDetails from "../student/InternshipDetails";
 import ProgressTimeline from "../student/ProgressTimeline";
-import NotificationPanel from "../student/NotificationPanel";
 import StudentQuickActions from "../student/StudentQuickActions";
 
 import { useEffect, useState } from "react";
@@ -22,40 +21,56 @@ const Dashboard = () => {
 
   useEffect(()=>{
      const fetchDashboard = async()=>{
-
    try{
-
     const data = await getStudentDashboard();
-
     setDashboardData(data.data);
-
    }
    catch(error){
     console.log(error);
-
    }
    finally{
-
     setLoading(false);
-
    }
-
  };
 
 
  fetchDashboard();
  },[]);
-
  const internship = dashboardData?.currentInternship;
+ 
+ console.log("FULL INTERNSHIP DATA:", JSON.stringify(internship, null, 2));
+console.log("NOC OBJECT:", internship?.noc);
+console.log("NOC STATUS:", internship?.noc?.status);
+ 
 
-const progress = [
-    internship,
-    internship?.teacherReview?.status === "Approved",
-    internship?.noc?.status === "Approved",
-    internship?.completion?.status === "Submitted"
-].filter(Boolean).length;
+const statusOrder = {
+  Applied: 1,
+  Approved: 2,
+  "Internship Ongoing": 3,
+  "Completion Submitted": 4,
+  Completed: 5,
+};
 
-const completion = `${progress * 25}%`;
+const currentStage =
+  statusOrder[internship?.status] || 0;
+
+const workflowSteps = [
+  currentStage >= 1,
+  currentStage >= 2,
+  !!internship?.teacherAssignment?.teacher,
+  internship?.noc?.status === "Issued",
+  currentStage >= 3,
+  currentStage >= 4,
+  internship?.teacherReview?.status === "Approved",
+  currentStage >= 5,
+];
+
+const completedSteps = workflowSteps.filter(Boolean).length;
+
+const completion = `${Math.round(
+  (completedSteps / workflowSteps.length) * 100
+)}%`;
+
  if(loading){
 
  return (
@@ -65,7 +80,54 @@ const completion = `${progress * 25}%`;
  );
 
 }
-  return (
+const steps = [
+  {
+    title: "Internship Applied",
+    completed: !!internship,
+  },
+
+  {
+    title: "Admin Approved",
+    completed:
+      internship?.status !== "Applied",
+  },
+
+  {
+    title: "Faculty Assigned",
+    completed:
+      !!internship?.teacherAssignment?.teacher,
+  },
+
+  {
+    title: "NOC Issued",
+    completed:
+      internship?.noc?.status === "Issued",
+  },
+
+  {
+    title: "Internship Ongoing",
+    completed:
+      internship?.status === "Internship Ongoing",
+  },
+
+  {
+    title: "Documents Submitted",
+    completed:
+      internship?.completion?.status === "Submitted",
+  },
+
+  {
+    title: "Teacher Review",
+    completed:
+      internship?.teacherReview?.status === "Approved",
+  },
+
+  {
+    title: "Internship Completed",
+    completed:
+      internship?.status === "Completed",
+  },
+];  return (
     <DashboardLayout  role="student"
   user={dashboardData?.student}>
   <div className="space-y-8 pb-12">
@@ -132,55 +194,16 @@ const completion = `${progress * 25}%`;
 {/* Progress + Notifications */}
 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-8 items-stretch">
 <div className="h-full">
-  <ProgressTimeline
-    steps={[
-      {
-        title: "Internship Applied",
-        description: "Internship submitted",
-        completed: true,
-      },
-      {
-        title: "Teacher Approved",
-        description:
-          internship?.teacherReview?.status === "Approved"
-            ? "Teacher approved internship"
-            : "Waiting for teacher approval",
-        completed:
-          internship?.teacherReview?.status === "Approved",
-      },
-      {
-        title: "NOC Approved",
-        description:
-          internship?.noc?.status === "Approved"
-            ? "NOC approved"
-            : "Waiting for NOC approval",
-        completed:
-          internship?.noc?.status === "Approved",
-      },
-      {
-        title: "Completion Submitted",
-        description:
-          internship?.completion?.status === "Submitted"
-            ? "Completion submitted"
-            : "Not submitted",
-        completed:
-          internship?.completion?.status === "Submitted",
-      },
-    ]}
-  />
+   <ProgressTimeline steps={steps} />
 </div>
-<div className="h-full">
-  <NotificationPanel
-    notifications={dashboardData?.notifications || []}
-  />
-  </div>
+
 
 </div>
 
 {/* Quick Actions */}
 <div className="mt-6 mb-8">
 
-  <StudentQuickActions />
+  <StudentQuickActions internship={internship} />
 
 </div>
 </div>

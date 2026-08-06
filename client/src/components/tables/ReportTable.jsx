@@ -7,6 +7,9 @@ import {
 const ReportTable = ({
   reports,
   onView,
+  onGenerateNOC,
+  onDownloadNOC,
+  onApprove,
 }) => {
 
 
@@ -22,32 +25,58 @@ const ReportTable = ({
 
   const statusBadge = (status) => {
 
-    if (status === "Approved") {
+  switch (status) {
+
+    case "Applied":
+      return (
+        <span className="inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
+          Applied
+        </span>
+      );
+
+    case "Approved":
       return (
         <span className="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
           Approved
         </span>
       );
-    }
 
-
-    if (status === "Pending") {
+    case "Internship Ongoing":
       return (
-        <span className="inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
-          Pending
+        <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+          Internship Ongoing
         </span>
       );
-    }
 
+    case "Completion Submitted":
+      return (
+        <span className="inline-flex rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700">
+          Completion Submitted
+        </span>
+      );
 
-    return (
-      <span className="inline-flex rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
-        Rejected
-      </span>
-    );
+    case "Completed":
+      return (
+        <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+          Completed
+        </span>
+      );
 
-  };
+    case "Rejected":
+      return (
+        <span className="inline-flex rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
+          Rejected
+        </span>
+      );
 
+    default:
+      return (
+        <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
+          {status}
+        </span>
+      );
+  }
+};
 
 
   const nocBadge = (status) => {
@@ -150,8 +179,15 @@ const ReportTable = ({
 
 
         {
-          reports.map((report,index)=>(
+          reports.map((report, index) => {
 
+  const canApprove =
+    report.status === "Applied" ||
+    report.status === "Pending" ||
+    report.status === "Teacher Assigned";
+
+  return (
+                 
 
             <tr
               key={report._id}
@@ -176,7 +212,7 @@ const ReportTable = ({
 
 
               <td className="px-6 py-4">
-                {report.department?.departmentName || "-"}
+                 {report.department?.departmentName || "-"}
               </td>
 
 
@@ -218,7 +254,7 @@ const ReportTable = ({
               <td className="px-6 py-4">
 
                 <div className="flex justify-center gap-2">
-
+                    
 
                   <button
                      onClick={() => onView(report)}
@@ -232,36 +268,64 @@ const ReportTable = ({
                     "
                   >
                     <Eye size={17}/>
+                    View
                   </button>
-
-
-
+        <button
+  onClick={() => onApprove(report)}
+  disabled={!canApprove}
+>
+  {report.status === "Approved" ? "Approved" : "Approve"}
+</button>
+                    
                   <button
-                    className="
-                    rounded-lg
-                    bg-green-100
-                    p-2
-                    text-green-700
-                    hover:bg-green-200
-                    transition
-                    "
-                  >
-                    <Download size={17}/>
-                  </button>
+  onClick={() => onGenerateNOC(report)}
+  disabled={report.noc?.status === "Issued"}
+  className={`
+    rounded-lg
+    px-3
+    py-2
+    text-sm
+    font-medium
+    ${
+      report.noc?.status === "Issued"
+      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+      : "bg-green-100 text-green-700 hover:bg-green-200"
+    }
+  `}
+>
+  {report.noc?.status === "Issued"
+    ? "NOC Issued"
+    : "Generate NOC"}
+</button>
+
+
+                    <button
+  onClick={() => onDownloadNOC(report)}
+  disabled={!report.noc?.nocFile}
+  className={`
+    rounded-lg
+    p-2
+    transition
+    ${
+      report.noc?.nocFile
+        ? "bg-green-100 text-green-700 hover:bg-green-200"
+        : "bg-gray-100 text-gray-400 cursor-not-allowed"
+    }
+  `}
+>
+  <Download size={17} />
+  Download
+</button>
 
 
                 </div>
 
 
               </td>
-
-
             </tr>
-
-
-          ))
+            );
+          })
         }
-
 
         </tbody>
 

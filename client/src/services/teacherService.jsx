@@ -8,8 +8,11 @@ export const getTeacherDashboard = async () => {
 
 // Assigned internships
 export const getTeacherInternships = async () => {
-  const res = await api.get("/teacher/internships");
-  return res.data;
+  const response = await api.get(
+    "/teacher/internships"
+  );
+
+  return response.data;
 };
 
 // Approve internship
@@ -38,4 +41,34 @@ export const generateNOCRequest = async (internship, student) => {
   );
 
   return response.data;
+};
+
+
+
+export const approveReview = async (
+  internshipId,
+  remarks
+) => {
+
+  const response = await api.patch(
+    `/teacher/review/${internshipId}/approve`,
+    { remarks }
+  );
+
+  return response.data;
+
+};
+
+export const rejectReview = async (
+  internshipId,
+  remarks
+) => {
+
+  const response = await api.patch(
+    `/teacher/review/${internshipId}/reject`,
+    { remarks }
+  );
+
+  return response.data;
+
 };

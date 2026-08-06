@@ -3,9 +3,9 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-
 const SectionTable = ({
   sections,
+  onView,
   onEdit,
   onDelete,
 }) => {
@@ -56,6 +56,7 @@ const SectionTable = ({
         <tbody>
 
           {sections.map((section, index) => (
+    
 
             <tr
               key={section._id}
@@ -92,24 +93,29 @@ const SectionTable = ({
 
                 <div className="flex justify-center gap-2">
 
-                  <button className="flex items-center gap-1 rounded-lg bg-blue-100 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-200 transition">
-                    <Eye size={16} />
-                    View
-                  </button>
-
-                  <button 
-                  onClick={() => onEdit(section)}
-                  className="flex items-center gap-1 rounded-lg bg-green-100 px-3 py-2 text-sm font-medium text-green-700 hover:bg-green-200 transition">
-                    <Pencil size={16} />
-                    Edit
-                  </button>
-
                   <button
-                   onClick={() => onDelete(section._id)}
-                   className="flex items-center gap-1 rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200 transition">
-                    <Trash2 size={16} />
-                    Delete
-                  </button>
+  onClick={() => onView(section)}
+  className="rounded-lg bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 hover:bg-blue-200 transition"
+>
+  <Eye size={16} />
+  View
+</button>
+
+                 <button
+  onClick={() => onEdit(section)}
+  className="rounded-lg bg-green-100 px-3 py-1 text-sm font-medium text-green-700 hover:bg-green-200 transition"
+>
+  <Pencil size={16} />
+  Edit
+</button>
+
+                <button
+  onClick={() => onDelete(section._id)}
+  className="rounded-lg bg-red-100 px-3 py-1 text-sm font-medium text-red-700 hover:bg-red-200 transition"
+>
+  <Trash2 size={16} />
+  Delete
+</button>
 
                 </div>
 

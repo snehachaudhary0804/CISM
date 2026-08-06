@@ -4,7 +4,12 @@ import {
   Trash2,
 } from "lucide-react";
 
-const DepartmentTable = ({ departments ,onEdit,onDelete}) => {
+const DepartmentTable = ({
+  departments,
+  onView,
+  onEdit,
+  onDelete,
+}) => {
   if (!departments?.length) {
     return (
       <div className="flex items-center justify-center py-16 text-slate-500 font-medium">
@@ -110,7 +115,7 @@ const DepartmentTable = ({ departments ,onEdit,onDelete}) => {
                 <div className="flex items-center justify-center gap-2">
 
                   <button
-                    
+                     onClick={() => onView(department)}
                     className="
                       flex items-center gap-1
                       rounded-lg

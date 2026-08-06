@@ -50,13 +50,3 @@ export const uploadCompletionDocument = async (
 
   return data;
 };
-export const getMyNotifications = async()=>{
-   const res = await api.get("/notifications/my");
-
-   return res.data.data;
-};
-
-export const markNotificationRead = async (id) => {
-  const { data } = await api.patch(`/notification/read/${id}`);
-  return data;
-};

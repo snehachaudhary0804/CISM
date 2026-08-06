@@ -13,23 +13,26 @@ const InternshipActions = ({ internship }) => {
     !!internship.externalDetails?.offerLetter;
 
 
-  const nocApproved =
-    internship.noc?.status === "Approved" &&
-    internship.noc?.nocFile;
+  const internshipApproved =
+  internship.status === "Approved" ||
+  internship.status === "Internship Ongoing" ||
+  internship.status === "Completion Submitted" ||
+  internship.status === "Completed";
 
+const nocIssued =
+  internship.noc?.status === "Issued";
 
-  const reportUploaded =
-    !!internship.documents?.internshipReport;
+const teacherAssigned =
+  !!internship.teacherAssignment?.teacher;
 
+const reportUploaded =
+  !!internship.completionDocuments?.report?.url;
 
-  const certificateUploaded =
-    !!internship.documents?.completionCertificate;
+const certificateUploaded =
+  !!internship.completionDocuments?.certificate?.url;
 
-
-  const pptUploaded =
-    !!internship.documents?.presentation;
-
-
+const pptUploaded =
+  !!internship.completionDocuments?.ppt?.url;
 
   return (
 
@@ -59,31 +62,28 @@ const InternshipActions = ({ internship }) => {
 
       {/* STEP 2 : Waiting for approval */}
 
-      {offerUploaded && !nocApproved && (
+    {offerUploaded && !internshipApproved && (
+  <div className="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-lg flex items-center gap-2">
+    <Clock size={16} />
+    Waiting for Admin Approval
+  </div>
+)}
+{internshipApproved && !nocIssued && (
+  <div className="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg flex items-center gap-2">
+    <Clock size={16} />
+    Waiting for NOC Generation
+  </div>
+)}
 
-        <div
-          className="
-          flex items-center gap-2
-          bg-yellow-100
-          text-yellow-700
-          px-4 py-2
-          rounded-lg
-          "
-        >
-
-          <Clock size={17}/>
-
-          Waiting for Teacher Approval
-
-        </div>
-
-      )}
-
-
-
+   {nocIssued && !teacherAssigned && (
+  <div className="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg flex items-center gap-2">
+    <Clock size={16} />
+    Waiting for Teacher Assignment
+  </div>
+)}
       {/* STEP 3 : Download NOC */}
 
-      {nocApproved && (
+      {nocIssued && (
 
         <button
           className="
@@ -105,10 +105,16 @@ const InternshipActions = ({ internship }) => {
       )}
 
 
-
+{teacherAssigned &&
+ internship.status === "Internship Ongoing" && (
+  <div className="bg-green-100 text-green-700 px-4 py-2 rounded-lg flex items-center gap-2">
+    <CheckCircle size={16} />
+    Internship Ongoing
+  </div>
+)}
       {/* STEP 4 : Upload completion documents */}
 
-      {nocApproved && (
+      {nocIssued && (
 
         <>
 
@@ -204,7 +210,14 @@ const InternshipActions = ({ internship }) => {
 
         </div>
 
+
       }
+      {internship.status === "Completed" && (
+  <div className="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg flex items-center gap-2">
+    <CheckCircle size={16} />
+    Internship Completed
+  </div>
+)}
 
 
     </div>

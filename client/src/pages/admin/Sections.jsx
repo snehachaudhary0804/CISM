@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../services/api";
 import SectionTable from "../../components/tables/SectionTable";
 import SectionModal from "../../components/common/SectionModal";
-
+import SectionViewModal from "../../components/common/SectionViewModal";
 
 
 
@@ -11,9 +11,10 @@ const Sections = () => {
 const [loading, setLoading] = useState(true);
 const [search, setSearch] = useState("");
 const [showModal, setShowModal] = useState(false);
-
+const [selectedSection, setSelectedSection] = useState(null);
+const [viewOpen, setViewOpen] = useState(false);
 const [editingSection, setEditingSection] = useState(null);
-
+const [departmentFilter, setDepartmentFilter] = useState("");
 const [departments, setDepartments] = useState([]);
 const [sessionsList, setSessionsList] = useState([]);
 
@@ -22,19 +23,27 @@ const [formData, setFormData] = useState({
   department: "",
   academicSession: "",
 });
-useEffect(() => {
-  fetchSections();
-  fetchDepartments();
-  fetchSessions();
-}, []);
-
-const filteredSections = sections.filter(
-  (section) =>
-    section.sectionName.toLowerCase().includes(search.toLowerCase()) ||
-    section.department?.departmentName 
+const filteredSections = sections.filter((section) => {
+  const matchesSearch =
+    section.sectionName
       ?.toLowerCase()
-      .includes(search.toLowerCase())
-);
+      .includes(search.toLowerCase()) ||
+    section.department?.departmentName
+      ?.toLowerCase()
+      .includes(search.toLowerCase());
+
+  const matchesDepartment =
+    !departmentFilter ||
+    section.department?._id === departmentFilter;
+
+  return matchesSearch && matchesDepartment;
+});
+const handleView = (section) => {
+  console.log(JSON.stringify(section, null, 2));
+
+  setSelectedSection(section);
+  setViewOpen(true);
+};
 
 const fetchSections = async () => {
   try {
@@ -107,7 +116,8 @@ const fetchDepartments = async () => {
   try {
     const res = await api.get("/departments");
 
-    console.log("Departments:", res.data.data);
+    console.log("API Response:", res.data);
+    console.log("Department Array:", res.data.data);
 
     setDepartments(res.data.data);
   } catch (err) {
@@ -121,6 +131,16 @@ const fetchSessions = async () => {
 
   setSessionsList(res.data.data);
 };
+
+useEffect(() => {
+  console.log("Fetching data...");
+
+  fetchSections();
+  fetchDepartments();
+  fetchSessions();
+}, []);
+console.log("viewOpen:", viewOpen);
+console.log("selectedSection:", selectedSection);
   return (
     <div className="space-y-6">
 
@@ -172,9 +192,19 @@ const fetchSessions = async () => {
             className="border border-slate-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
           />
 
-          <select className="border border-slate-300 rounded-xl px-4 py-3">
-            <option>All Departments</option>
-          </select>
+          <select
+  value={departmentFilter}
+  onChange={(e) => setDepartmentFilter(e.target.value)}
+  className="border border-slate-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+>
+  <option value="">All Departments</option>
+
+  {departments.map((dept) => (
+    <option key={dept._id} value={dept._id}>
+      {dept.departmentName}
+    </option>
+  ))}
+</select>
 
         </div>
 
@@ -187,8 +217,9 @@ const fetchSessions = async () => {
     Loading Sections...
   </div>
 ) : (
-  <SectionTable
+ <SectionTable
   sections={filteredSections}
+  onView={handleView}
   onEdit={handleEdit}
   onDelete={handleDelete}
 />
@@ -203,6 +234,11 @@ const fetchSessions = async () => {
   departments={departments}
   sessions={sessionsList}
   onSubmit={handleSubmit}
+/>
+<SectionViewModal
+  show={viewOpen}
+  onClose={() => setViewOpen(false)}
+  section={selectedSection}
 />
     </div>
   );

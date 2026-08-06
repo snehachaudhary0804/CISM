@@ -14,7 +14,7 @@ import DashboardHero from "../../components/dashboard/DashboardHero";
 import StatCard from "../../components/dashboard/StatCard";
 import ChartCard from "../../components/dashboard/ChartCard";
 import RecentApplications from "../../components/dashboard/RecentApplications";
-import QuickActions from "../../components/dashboard/QuickActions";
+import AdminQuickAction from "./AdminQuickAction";
 
 import {
   ResponsiveContainer,
@@ -71,14 +71,17 @@ const Dashboard = () => {
 
 
   const fetchDashboard = async () => {
-    try {
-      const response = await getDashboardData();
-      setDashboardData(response.data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+     try {
+    const response = await getDashboardData();
+
+    console.log(response.data);   // ADD THIS
+
+    setDashboardData(response.data);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setLoading(false);
+  }
   };
 
 
@@ -91,13 +94,22 @@ const Dashboard = () => {
   }
 
 
-  const overview = dashboardData.overview;
+  const overview = dashboardData?.overview || {};
+const approvalData = dashboardData.approvalChart || [];
+const departmentData = dashboardData.departmentChart || [];
 
-
+const internshipType =
+  dashboardData.internshipTypeStats?.map((item) => ({
+    name: item._id,
+    value: item.total,
+  })) || [];
+console.log(JSON.stringify(approvalData, null, 2));
+console.log(JSON.stringify(departmentData, null, 2));
+console.log(JSON.stringify(internshipType, null, 2));
   const stats = [
     {
       title:"Students",
-      value:overview.totalStudents,
+      value: overview.totalStudents || 0,
       growth:"+0%",
       icon:Users,
       iconBg:"bg-blue-100",
@@ -105,7 +117,7 @@ const Dashboard = () => {
     },
     {
       title:"Teachers",
-      value:overview.totalTeachers,
+      value: overview.totalTeachers || 0,
       growth:"+0%",
       icon:GraduationCap,
       iconBg:"bg-green-100",
@@ -113,23 +125,23 @@ const Dashboard = () => {
     },
     {
       title:"Internships",
-      value:overview.totalInternships,
+      value: overview.totalInternships || 0,
       growth:"+0%",
       icon:Briefcase,
       iconBg:"bg-purple-100",
       iconColor:"text-purple-600",
     },
-    {
-      title:"Noc Pending",
-      value:overview.pendingInternships,
-      growth:"+0%",
-      icon:Clock,
-      iconBg:"bg-orange-100",
-      iconColor:"text-orange-600",
-    },
+     {
+  title: "NOC Pending",
+  value: overview.pendingNOC || 0,
+  growth: "+0%",
+  icon: Clock,
+  iconBg: "bg-orange-100",
+  iconColor: "text-orange-600",
+},
     {
       title:"Departments",
-      value:overview.totalDepartments,
+    value: overview.totalDepartments || 0,
       growth:"+0%",
       icon:Building2,
       iconBg:"bg-cyan-100",
@@ -137,7 +149,7 @@ const Dashboard = () => {
     },
     {
       title:"NOCs Issued",
-      value:overview.issuedNOC,
+      value: overview.issuedNOC || 0,
       growth:"+0%",
       icon:FileText,
       iconBg:"bg-pink-100",
@@ -151,7 +163,11 @@ const Dashboard = () => {
     <div className="min-h-screen bg-slate-50 space-y-4">
 
 
-      <DashboardHero />
+     <DashboardHero
+  user="Administrator"
+  overviewValue={overview.teacherAssigned || 0}
+  overviewText="Pending Internship Reviews"
+/>
 
 
       {/* Statistics */}
@@ -299,7 +315,9 @@ const Dashboard = () => {
           Recent Applications
         </h2>
 
-        <RecentApplications/>
+        <RecentApplications
+  internships={dashboardData.recentInternships}
+/>
 
       </section>
 
@@ -317,7 +335,7 @@ const Dashboard = () => {
         Quick Action
         </h2>
 
-    <QuickActions/>
+    <AdminQuickAction/>
 
   </div>
 

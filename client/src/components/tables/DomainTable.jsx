@@ -4,11 +4,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-const DomainTable = ({
-  domains,
-  onEdit,
-  onDelete,
-}) => {
+const DomainTable = ({ domains, onView, onEdit, onDelete }) => {
   if (!domains?.length) {
     return (
       <div className="flex justify-center py-16 text-slate-500 font-medium">
@@ -78,7 +74,9 @@ const DomainTable = ({
               <td className="px-6 py-4">
                 <div className="flex items-center justify-center gap-2">
 
-                  <button className="flex items-center gap-1 rounded-lg bg-blue-100 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-200 transition">
+                  <button 
+                  onClick={() => onView(domain)}
+                  className="flex items-center gap-1 rounded-lg bg-blue-100 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-200 transition">
                     <Eye size={16} />
                     View
                   </button>

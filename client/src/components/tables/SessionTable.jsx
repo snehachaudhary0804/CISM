@@ -6,6 +6,7 @@ import {
 
 const SessionTable = ({
   sessions,
+  onView,
   onEdit,
   onDelete,
 }) => {
@@ -98,7 +99,7 @@ const SessionTable = ({
                 <div className="flex justify-center gap-2">
 
                   <button 
-                   
+                    onClick={() => onView(session)}
                   className="flex items-center gap-1 rounded-lg bg-blue-100 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-200">
                     <Eye size={16} />
                     View

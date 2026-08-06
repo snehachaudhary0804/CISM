@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  
-  deleteStudent,
-} from "../../services/adminService";
+
 import {
   getAllStudents,
   getAllDepartments,
@@ -12,6 +9,14 @@ import {
 import Loader from "../../components/common/Loader";
 import StudentTable from "../../components/tables/StudentTable";
 import StudentModal from "../../components/common/StudentModal";
+import Pagination from "../../components/common/Pagination";
+import ViewStudentModal from "../../components/common/ViewStudentModal";
+import {
+  deleteStudent,
+  updateStudent,
+} from "../../services/adminService";
+
+
 
 const Students = () => {
   const [students, setStudents] = useState([]);
@@ -21,7 +26,7 @@ const Students = () => {
 const [editingStudent, setEditingStudent] = useState(null);
 const [departments, setDepartments] = useState([]);
 const [sections, setSections] = useState([]);
-
+const [viewStudent, setViewStudent] = useState(null);
 const [selectedDepartment, setSelectedDepartment] = useState("");
 const [selectedSection, setSelectedSection] = useState("");
 const [selectedStatus, setSelectedStatus] = useState("");
@@ -40,8 +45,8 @@ const [formData, setFormData] = useState({
   semester: 1,
   isActive: true,
 });
-  const handleView = (student) => {
-  console.log(student);
+const handleView = (student) => {
+  setViewStudent(student);
 };
 
 const handleEdit = (student) => {
@@ -75,12 +80,24 @@ const handleDelete = async (id) => {
     alert("Unable to delete student");
   }
 };
-  const fetchStudents = async () => {
+const fetchStudents = async (page = 1) => {
   try {
-    const response = await getAllStudents();
+    setLoading(true);
 
-    setStudents(response.data || []);
+    const response = await getAllStudents({
+      page,
+      search,
+      department: selectedDepartment,
+      section: selectedSection,
+      academicSession: selectedSession,
+      status: selectedStatus,
+    });
+
+    console.log(response);
+
+    setStudents(response.students || []);
     setPagination(response.pagination || {});
+
   } catch (error) {
     console.error(error);
   } finally {
@@ -89,7 +106,11 @@ const handleDelete = async (id) => {
 };
 const loadFilters = async () => {
   try {
-    const [deptRes, sectionRes, sessionRes] = await Promise.all([
+    const [
+      deptRes,
+      sectionRes,
+      sessionRes
+    ] = await Promise.all([
       getAllDepartments(),
       getAllSections(),
       getAllAcademicSessions(),
@@ -98,43 +119,25 @@ const loadFilters = async () => {
     setDepartments(deptRes.data || []);
     setSections(sectionRes.data || []);
     setSessions(sessionRes.data || []);
-  } catch (error) {
+
+  } catch(error) {
     console.error(error);
   }
 };
 useEffect(() => {
-  fetchStudents();
+  fetchStudents(1);
+}, [
+  search,
+  selectedDepartment,
+  selectedSection,
+  selectedSession,
+  selectedStatus,
+]);
+
+
+useEffect(() => {
   loadFilters();
 }, []);
-const filteredStudents = students.filter((student) => {
-  const matchesSearch =
-    student.name.toLowerCase().includes(search.toLowerCase()) ||
-    student.rollNumber.toLowerCase().includes(search.toLowerCase());
-
-  const matchesDepartment =
-    !selectedDepartment ||
-    student.department?._id === selectedDepartment;
-
-  const matchesSection =
-    !selectedSection ||
-    student.section?._id === selectedSection;
-
-  const matchesSession =
-    !selectedSession ||
-    student.academicSession?._id === selectedSession;
-
-  const matchesStatus =
-    selectedStatus === "" ||
-    String(student.isActive) === selectedStatus;
-
-  return (
-    matchesSearch &&
-    matchesDepartment &&
-    matchesSection &&
-    matchesSession &&
-    matchesStatus
-  );
-});
 if (loading) return <Loader />;
   return (
     <div className="space-y-6">
@@ -155,7 +158,7 @@ if (loading) return <Loader />;
   <div className="flex items-center gap-3">
 
     <span className="inline-flex rounded-full bg-blue-100 text-blue-700 px-4 py-1 text-sm font-semibold">
-      Total Students: {students.length}
+      Total Students: {pagination.totalStudents || 0}
     </span>
 
     <button
@@ -199,20 +202,10 @@ if (loading) return <Loader />;
             onChange={(e) => setSearch(e.target.value)}
             className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-
-          <select className="border
-border-slate-300
-rounded-xl
-px-4
-py-3
-focus:ring-2
-focus:ring-blue-500
-focus:border-blue-500
-outline-none">
-            <select
+    <select
   value={selectedDepartment}
   onChange={(e) => setSelectedDepartment(e.target.value)}
-  className="border border-slate-300 rounded-xl px-4 py-3"
+  className="border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500"
 >
   <option value="">All Departments</option>
 
@@ -222,17 +215,8 @@ outline-none">
     </option>
   ))}
 </select>
-          </select>
 
-          <select className="border
-border-slate-300
-rounded-xl
-px-4
-py-3
-focus:ring-2
-focus:ring-blue-500
-focus:border-blue-500
-outline-none">
+          
             <select
   value={selectedSection}
   onChange={(e) => setSelectedSection(e.target.value)}
@@ -246,7 +230,7 @@ outline-none">
     </option>
   ))}
 </select>
-          </select>
+      
          <select
   value={selectedSession}
   onChange={(e) => setSelectedSession(e.target.value)}
@@ -260,15 +244,7 @@ outline-none">
     </option>
   ))}
 </select>
-          <select className="border
-border-slate-300
-rounded-xl
-px-4
-py-3
-focus:ring-2
-focus:ring-blue-500
-focus:border-blue-500
-outline-none">
+          
             <select
   value={selectedStatus}
   onChange={(e) => setSelectedStatus(e.target.value)}
@@ -278,7 +254,7 @@ outline-none">
   <option value="true">Active</option>
   <option value="false">Inactive</option>
 </select>
-          </select>
+          
 
         </div>
 
@@ -286,13 +262,25 @@ outline-none">
        <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
       
   
-         <StudentTable
-  students={filteredStudents}
+        <p className="p-4 text-red-600">
+  Students Count: {students.length}
+</p>
+
+<StudentTable
+  students={students}
   onView={handleView}
   onEdit={handleEdit}
   onDelete={handleDelete}
 />
       </div>
+
+{/* Pagination */}
+<Pagination
+  currentPage={pagination.currentPage}
+  totalPages={pagination.totalPages}
+  onPageChange={(page) => fetchStudents(page)}
+/>
+
 <StudentModal
   open={showModal}
   onClose={() => setShowModal(false)}
@@ -300,7 +288,13 @@ outline-none">
   setFormData={setFormData}
   editingStudent={editingStudent}
   fetchStudents={fetchStudents}
-/>    </div>
+  updateStudent={updateStudent}
+/>  
+<ViewStudentModal
+  open={!!viewStudent}
+  student={viewStudent}
+  onClose={() => setViewStudent(null)}
+/>  </div>
   );
 };
 

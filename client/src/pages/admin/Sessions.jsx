@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import api from "../../services/api";
 import SessionTable from "../../components/tables/SessionTable";
 import SessionModal from "../../components/common/SessionModal";
+import SessionViewModal from "../../components/common/SessionViewModal";
+import Loader from "../../components/common/Loader";
 
 const Sessions = () => {
 
@@ -9,7 +11,8 @@ const Sessions = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
-
+  const [showViewModal, setShowViewModal] = useState(false);
+const [selectedSession, setSelectedSession] = useState(null);
 const [editingSession, setEditingSession] = useState(null);
 
 const [formData, setFormData] = useState({
@@ -65,14 +68,18 @@ const handleEdit = (session) => {
 const handleDelete = async (id) => {
   if (!window.confirm("Delete this session?")) return;
 
-  await api.delete(`/academic-sessions/${id}`);
-
-  fetchSessions();
-};
-
-  useEffect(() => {
+  try {
+    await api.delete(`/academic-sessions/${id}`);
     fetchSessions();
-  }, []);
+  } catch (err) {
+    console.log(err.response?.data || err);
+  }
+};
+const handleView = (session) => {
+  setSelectedSession(session);
+  setShowViewModal(true);
+};
+ 
 
 
   const fetchSessions = async () => {
@@ -108,7 +115,9 @@ const handleDelete = async (id) => {
         ?.toLowerCase()
         .includes(search.toLowerCase())
   );
-
+ useEffect(() => {
+    fetchSessions();
+  }, []);
 
   return (
 
@@ -140,15 +149,15 @@ const handleDelete = async (id) => {
         </div>
 
 
-       <button
+          <button
   onClick={() => {
     setEditingSession(null);
 
     setFormData({
       sessionName: "",
-      startYear: "",
-      endYear: "",
-      isCurrent: false,
+      startDate: "",
+      endDate: "",
+      isActive: false,
     });
 
     setShowModal(true);
@@ -197,15 +206,16 @@ const handleDelete = async (id) => {
 
           (
             <div className="p-10 text-center text-slate-500">
-              Loading Sessions...
+              <Loader />
             </div>
           )
 
           :
 
           (
-            <SessionTable
+           <SessionTable
   sessions={filteredSessions}
+  onView={handleView}
   onEdit={handleEdit}
   onDelete={handleDelete}
 />
@@ -223,6 +233,11 @@ const handleDelete = async (id) => {
   setFormData={setFormData}
   editingSession={editingSession}
   onSubmit={handleSubmit}
+/>
+<SessionViewModal
+  show={showViewModal}
+  onClose={() => setShowViewModal(false)}
+  session={selectedSession}
 />
     </div>
 

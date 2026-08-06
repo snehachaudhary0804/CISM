@@ -1,39 +1,42 @@
 import { Eye, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
-import { approveInternship, rejectInternship } from "../../services/teacherService";
-
-
+import { Fragment } from "react";
+import StatusBadge from "../../components/common/StatusBadge";
+import {
+  approveReview,
+  rejectReview,
+} from "../../services/teacherService";
 const TeacherInternshipTable = ({
   internships = [],
   loading,
   onRefresh,
 }) => {
   const [expandedId, setExpandedId] = useState(null);
-  const handleApprove = async (id) => {
+  const [remarks, setRemarks] = useState("");
+ 
+ 
+ const handleApproveReview = async (id) => {
   try {
-    await approveInternship(id);
-    alert("Internship approved successfully.");
+    await approveReview(id, remarks);
+    alert("Review approved successfully.");
+    setRemarks("");
     onRefresh();
   } catch (error) {
     console.error(error);
-    alert(error.response?.data?.message || "Approval failed");
   }
 };
-const handleReject = async (id) => {
-  const remarks = prompt("Enter rejection remarks:");
 
-  if (remarks === null) return;
-
+const handleRejectReview = async (id) => {
   try {
-    await rejectInternship(id, remarks);
-    alert("Internship rejected.");
+    await rejectReview(id, remarks);
+    alert("Review rejected successfully.");
+    setRemarks("");
     onRefresh();
   } catch (error) {
     console.error(error);
-    alert(error.response?.data?.message || "Rejection failed");
   }
 };
-
+ 
   if (loading) return <p>Loading...</p>;
 
   if (!internships.length)
@@ -43,7 +46,8 @@ const handleReject = async (id) => {
       </p>
     );
 
-  return (
+  return(
+  
     <table className="w-full">
           <thead className="bg-slate-100 border-b">
   <tr>
@@ -52,14 +56,17 @@ const handleReject = async (id) => {
     <th className="text-left p-4">Company</th>
     <th className="text-left p-4">Domain</th>
     <th className="text-left p-4">Type</th>
-    <th className="text-left p-4">Status</th>
+    <th className="text-left p-4">Internship Status</th>
+<th className="text-left p-4">Review Status</th>
     <th className="text-center p-4">Action</th>
   </tr>
 </thead>
 
 <tbody>
   {internships.map((item) => (
-    <>
+  
+     <Fragment key={item._id}>
+
       <tr
         key={item._id}
         className="border-b hover:bg-slate-50"
@@ -84,21 +91,18 @@ const handleReject = async (id) => {
           {item.internshipType}
         </td>
 
-       <td className="p-4">
-  <span
-    className={`
-      px-3 py-1 rounded-full text-sm font-semibold
-      ${
-        item.teacherReview?.status === "Approved"
-          ? "bg-green-100 text-green-700"
-          : item.teacherReview?.status === "Rejected"
-          ? "bg-red-100 text-red-700"
-          : "bg-yellow-100 text-yellow-700"
-      }
-    `}
-  >
-    {item.teacherReview?.status || "Pending"}
-  </span>
+         <td className="px-6 py-4">
+  <StatusBadge status={item.status} />
+</td>
+
+<td className="px-6 py-4">
+  <StatusBadge
+    status={
+  item.teacherReview?.status
+    ? item.teacherReview.status
+    : "Pending Review"
+}
+  />
 </td>
 
         <td className="p-4 text-center">
@@ -128,7 +132,7 @@ const handleReject = async (id) => {
       {expandedId === item._id && (
         <tr>
           <td
-            colSpan={7}
+            colSpan={8}
             className="bg-slate-50 p-6"
           >
             <h3 className="text-xl font-bold mb-4">
@@ -178,10 +182,10 @@ const handleReject = async (id) => {
 
 
     {/* Report */}
-    {item.completionDetails?.reportFile && (
+    {item.completionDocuments?.report?.url && (
       <>
         <a
-          href={item.completionDetails.reportFile}
+          href={item.completionDocuments.report.url}
           target="_blank"
           rel="noreferrer"
           className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700"
@@ -190,7 +194,7 @@ const handleReject = async (id) => {
         </a>
 
         <a
-          href={item.completionDetails.reportFile}
+          href={item.completionDocuments.report.url}
           download
           className="px-4 py-2 rounded-lg bg-purple-100 text-purple-700"
         >
@@ -201,10 +205,10 @@ const handleReject = async (id) => {
 
 
     {/* Certificate */}
-    {item.completionDetails?.certificateFile && (
+    {item.completionDocuments?.certificate?.url && (
       <>
         <a
-          href={item.completionDetails.certificateFile}
+          href={item.completionDocuments.certificate.url}
           target="_blank"
           rel="noreferrer"
           className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
@@ -213,7 +217,7 @@ const handleReject = async (id) => {
         </a>
 
         <a
-          href={item.completionDetails.certificateFile}
+          href={item.completionDocuments.certificate.url}
           download
           className="px-4 py-2 rounded-lg bg-green-100 text-green-700"
         >
@@ -221,44 +225,77 @@ const handleReject = async (id) => {
         </a>
       </>
     )}
+    {item.completionDocuments?.ppt?.url && (
+  <>
+    <a
+      href={item.completionDocuments.ppt.url}
+      target="_blank"
+      rel="noreferrer"
+      className="px-4 py-2 rounded-lg bg-orange-600 text-white"
+    >
+      View PPT
+    </a>
 
+    <a
+      href={item.completionDocuments.ppt.url}
+      download
+      className="px-4 py-2 rounded-lg bg-orange-100 text-orange-700"
+    >
+      Download PPT
+    </a>
+  </>
+)}
   </div>
 </div>
             </div>
+<hr className="my-8" />
 
-            <div className="mt-6 flex gap-4">
 
-  {item.teacherReview?.status === "Pending" && (
+      <div className="mt-6">
+
+  {item.status === "Teacher Assigned" && (
     <>
-      <button
-        onClick={() => handleApprove(item._id)}
-        className="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
-      >
-        Approve Internship
-      </button>
+      <label className="block font-semibold mb-2">
+        Teacher Remarks
+      </label>
 
-      <button
-        onClick={() => handleReject(item._id)}
-        className="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
-      >
-        Reject Internship
-      </button>
+      <textarea
+        rows={4}
+        placeholder="Enter your review remarks..."
+        className="w-full border rounded-lg p-3 mb-4"
+        value={remarks}
+        onChange={(e) => setRemarks(e.target.value)}
+      />
+
+      <div className="flex gap-4">
+
+        <button
+          onClick={() => handleApproveReview(item._id)}
+          className="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+        >
+          Approve Review
+        </button>
+
+        <button
+          onClick={() => handleRejectReview(item._id)}
+          className="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+        >
+          Reject Review
+        </button>
+
+      </div>
     </>
   )}
- 
- {item.teacherReview?.status === "Approved" && (
-<>
-  <span className="px-4 py-2 rounded-lg bg-green-100 text-green-700 font-semibold">
-    ✓ Internship Approved
-  </span>
 
-  
-</>
-)}
+  {item.teacherReview?.status === "Approved" && (
+    <span className="px-4 py-2 rounded-lg bg-green-100 text-green-700 font-semibold">
+      ✓ Review Approved
+    </span>
+  )}
 
   {item.teacherReview?.status === "Rejected" && (
     <span className="px-4 py-2 rounded-lg bg-red-100 text-red-700 font-semibold">
-      ✗ Internship Rejected
+      ✗ Review Rejected
     </span>
   )}
 
@@ -266,7 +303,8 @@ const handleReject = async (id) => {
           </td>
         </tr>
       )}
-    </>
+    </Fragment>
+
   ))}
 </tbody>
     </table>

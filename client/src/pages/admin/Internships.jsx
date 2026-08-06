@@ -1,41 +1,80 @@
-import { useState } from "react";
-import InternshipTable from "../../components/tables/InternshipTable";
+import { useEffect, useState } from "react";
+import AdminInternshipTable from "./AdminInternshipTable";
+import {
+  getAllInternships,
+  getDepartments,
+  getAllTeachers,
+} from "../../services/adminService";
 
 const Internships = () => {
+  const [internships, setInternships] = useState([]);
+  const [departments, setDepartments] = useState([]);
+const [loading, setLoading] = useState(true);
+const [search, setSearch] = useState("");
+const [statusFilter, setStatusFilter] = useState("");
+const [departmentFilter, setDepartmentFilter] = useState("");
+const [teacherFilter, setTeacherFilter] = useState("");
+const [teachers, setTeachers] = useState([]);
 
-  const [internships] = useState([
-    {
-      _id: 1,
-      student: "Sneha Chaudhary",
-      company: "Infosys",
-      domain: "Web Development",
-      type: "External",
-      teacher: "Dr. Sharma",
-      status: "Approved",
-      noc: "Issued",
-    },
-    {
-      _id: 2,
-      student: "Rahul Kumar",
-      company: "TCS",
-      domain: "AI",
-      type: "External",
-      teacher: "Prof. Gupta",
-      status: "Pending",
-      noc: "Pending",
-    },
-    {
-      _id: 3,
-      student: "Anjali Singh",
-      company: "College Lab",
-      domain: "Cyber Security",
-      type: "In-House",
-      teacher: "Dr. Verma",
-      status: "Rejected",
-      noc: "Not Required",
-    },
-  ]);
+const fetchDepartments = async () => {
+  try {
+    const res = await getDepartments();
+    setDepartments(res.departments || []);
+  } catch (err) {
+    console.log(err);
+  }
+};
+const fetchTeachers = async () => {
+  try {
+    const res = await getAllTeachers();
 
+    setTeachers(res.teachers || []);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+const filteredInternships = internships.filter((item) => {
+
+  const matchesSearch =
+    item.student?.name
+      ?.toLowerCase()
+      .includes(search.toLowerCase());
+
+  const matchesStatus =
+    !statusFilter ||
+    item.status === statusFilter;
+
+  const matchesDepartment =
+    !departmentFilter ||
+    item.department?._id === departmentFilter;
+
+  const matchesTeacher =
+    !teacherFilter ||
+    item.teacherAssignment?.teacher?._id === teacherFilter;
+
+  return (
+    matchesSearch &&
+    matchesStatus &&
+    matchesDepartment &&
+    matchesTeacher
+  );
+});
+const fetchInternships = async () => {
+  try {
+    const res = await getAllInternships();
+    setInternships(res.internships || []);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setLoading(false);
+  }
+};
+useEffect(() => {
+  fetchInternships();
+  fetchDepartments();
+  fetchTeachers();
+}, []);
   return (
 
     <div className="space-y-6">
@@ -77,43 +116,78 @@ const Internships = () => {
 
       </div>
 
-      {/* Filters */}
+      
+<div className="bg-white rounded-xl p-5 mb-6 shadow-sm border">
 
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+    <input
+      type="text"
+      placeholder="Search Student..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      className="border rounded-lg px-4 py-2"
+    />
 
-          <input
-            type="text"
-            placeholder="Search Student..."
-            className="border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-          />
+    <select
+      value={statusFilter}
+      onChange={(e) => setStatusFilter(e.target.value)}
+      className="border rounded-lg px-4 py-2"
+    >
+      <option value="">All Status</option>
+      <option value="Applied">Applied</option>
+      <option value="NOC Approved">NOC Approved</option>
+      <option value="Completion Submitted">Completion Submitted</option>
+      <option value="Teacher Assigned">Teacher Assigned</option>
+      <option value="Completed">Completed</option>
+      <option value="Rejected">Rejected</option>
+    </select>
 
-          <select className="border border-slate-300 rounded-xl px-4 py-3">
-            <option>All Departments</option>
-          </select>
+      <select
+  value={departmentFilter}
+  onChange={(e) =>
+    setDepartmentFilter(e.target.value)
+  }
+  className="border rounded-lg px-4 py-2"
+>
+  <option value="">
+    All Departments
+  </option>
 
-          <select className="border border-slate-300 rounded-xl px-4 py-3">
-            <option>All Teachers</option>
-          </select>
+  {departments.map((dept) => (
+    <option
+      key={dept._id}
+      value={dept._id}
+    >
+      {dept.departmentName}
+    </option>
+  ))}
+</select>
+    <select
+  value={teacherFilter}
+  onChange={(e) => setTeacherFilter(e.target.value)}
+  className="border rounded-lg px-4 py-2"
+>
+  <option value="">All Teachers</option>
 
-          <select className="border border-slate-300 rounded-xl px-4 py-3">
-            <option>All Status</option>
-          </select>
+  {teachers.map((teacher) => (
+    <option
+      key={teacher._id}
+      value={teacher._id}
+    >
+      {teacher.name}
+    </option>
+  ))}
+</select>
+  </div>
 
-          <select className="border border-slate-300 rounded-xl px-4 py-3">
-            <option>All Types</option>
-          </select>
-
-        </div>
-
-      </div>
-
+</div>
       {/* Table */}
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
 
-        <InternshipTable internships={internships} />
+         <AdminInternshipTable
+  internships={filteredInternships}></AdminInternshipTable>
 
       </div>
 

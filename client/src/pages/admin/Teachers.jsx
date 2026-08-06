@@ -1,16 +1,38 @@
 import { useEffect, useState } from "react";
-import { getAllTeachers } from "../../services/adminService";
+
+import {
+  getAllTeachers,
+  getAllDepartments,
+  registerTeacher,
+} from "../../services/adminService";
+
 import Loader from "../../components/common/Loader";
 import TeacherTable from "../../components/tables/TeacherTable";
+import TeacherModal from "../../components/common/TeacherModal";
+
+
+
 
 const Teachers = () => {
+
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [departments, setDepartments] = useState([]);
+
+const [selectedTeacher, setSelectedTeacher] = useState(null);
+
+const [isModalOpen, setIsModalOpen] = useState(false);
+
+const [modalType, setModalType] = useState("view");
+
+const [search, setSearch] = useState("");
+
+const [departmentFilter, setDepartmentFilter] = useState("");
 
   const fetchTeachers = async () => {
     try {
       const response = await getAllTeachers();
-
+console.log("Teachers API Response:", response);
       // Change this line if your service returns a different structure
       setTeachers(response.teachers || response.data?.teachers || []);
     } catch (error) {
@@ -19,12 +41,89 @@ const Teachers = () => {
       setLoading(false);
     }
   };
+ const fetchDepartments = async () => {
+  try {
+    const res = await getAllDepartments();
+
+    console.log("Departments API Response:", res);
+
+    setDepartments(
+      res.departments ||
+      res.data?.departments ||
+      res.data ||
+      []
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   useEffect(() => {
     fetchTeachers();
+    fetchDepartments();
   }, []);
 
-  if (loading) return <Loader />;
+
+  const openView = (teacher) => {
+  setSelectedTeacher(teacher);
+  setModalType("view");
+  setIsModalOpen(true);
+};
+
+const openEdit = (teacher) => {
+  setSelectedTeacher(teacher);
+  setModalType("edit");
+  setIsModalOpen(true);
+};
+
+const openAdd = () => {
+  setSelectedTeacher(null);
+  setModalType("add");
+  setIsModalOpen(true);
+};
+
+const handleDelete = async (id) => {
+  if (!window.confirm("Delete this teacher?")) return;
+
+  try {
+    await deleteTeacher(id);
+    fetchTeachers();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const handleSave = async (formData) => {
+  try {
+    if (modalType === "add") {
+      await registerTeacher(formData);
+    } else if (modalType === "edit") {
+      await updateTeacher(selectedTeacher._id, formData);
+    }
+
+    setIsModalOpen(false);
+    fetchTeachers();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const filteredTeachers = teachers.filter((teacher) => {
+  const matchesSearch =
+    teacher.name?.toLowerCase().includes(search.toLowerCase()) ||
+    teacher.email?.toLowerCase().includes(search.toLowerCase()) ||
+    teacher.employeeId?.toLowerCase().includes(search.toLowerCase());
+
+  const matchesDepartment =
+    !departmentFilter ||
+    teacher.department?._id === departmentFilter;
+
+  return matchesSearch && matchesDepartment;
+});
+
+if (loading) return <Loader />;
+
+
 
   return (
     <div className="space-y-6">
@@ -54,9 +153,12 @@ const Teachers = () => {
           </p>
         </div>
 
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition shadow-sm font-semibold">
-          + Add Teacher
-        </button>
+        <button
+  onClick={openAdd}
+  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl"
+>
+  + Add Teacher
+</button>
 
       </div>
 
@@ -66,34 +168,47 @@ const Teachers = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           <input
-            type="text"
-            placeholder="Search teacher..."
-            className="border border-slate-300 rounded-xl px-4 py-3 focus:borderline-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+  type="text"
+  placeholder="Search teacher..."
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  className="border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500"
+/>
 
-          <select className="
-border
-border-slate-300
-rounded-xl
-px-4
-py-3
-focus:outline-none
-focus:ring-2
-focus:ring-blue-500
-focus:border-blue-500
-">
-            <option>All Departments</option>
-          </select>
+        <select
+  value={departmentFilter}
+  onChange={(e) => setDepartmentFilter(e.target.value)}
+  className="border border-slate-300 rounded-xl px-4 py-3"
+>
+  <option value="">All Departments</option>
 
+  {departments.map((dept) => (
+    <option key={dept._id} value={dept._id}>
+      {dept.departmentName}
+    </option>
+  ))}
+</select>
         </div>
 
       </div>
 
       {/* Table */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden">
-        <TeacherTable teachers={teachers} />
+    <TeacherTable
+  teachers={filteredTeachers}
+  onView={openView}
+  onEdit={openEdit}
+  onDelete={handleDelete}
+/>
       </div>
-
+<TeacherModal
+  isOpen={isModalOpen}
+  onClose={() => setIsModalOpen(false)}
+  teacher={selectedTeacher}
+  mode={modalType}
+  departments={departments}
+  onSave={handleSave}
+/>
     </div>
   );
 };
