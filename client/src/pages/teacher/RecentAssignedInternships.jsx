@@ -3,7 +3,7 @@ import { Eye } from "lucide-react";
 
 const getStatusColor = (status) => {
   switch (status) {
-    case "Teacher Assigned":
+    case "Approved":
       return "bg-yellow-100 text-yellow-700";
 
     case "Teacher Approved":
@@ -37,8 +37,8 @@ const RecentAssignedInternships = ({ internships = [] }) => {
                 Company
               </th>
               <th className="px-5 py-4 text-left text-sm font-semibold text-slate-700">
-             Type
-             </th>
+                Type
+              </th>
               <th className="px-5 py-4 text-left text-sm font-semibold text-slate-700">
                 Domain
               </th>
@@ -77,9 +77,7 @@ const RecentAssignedInternships = ({ internships = [] }) => {
                       internship.inHouseDetails?.projectTitle ||
                       "-"}
                   </td>
-                  <td className="px-5 py-4">
-                       {internship.internshipType}
-                    </td>
+                  <td className="px-5 py-4">{internship.internshipType}</td>
 
                   <td className="px-5 py-4">
                     {internship.domain?.domainName || "-"}
@@ -88,7 +86,7 @@ const RecentAssignedInternships = ({ internships = [] }) => {
                   <td className="px-5 py-4">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                        internship.status
+                        internship.status,
                       )}`}
                     >
                       {internship.status}
@@ -108,10 +106,7 @@ const RecentAssignedInternships = ({ internships = [] }) => {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan={6}
-                  className="text-center py-10 text-slate-500"
-                >
+                <td colSpan={6} className="text-center py-10 text-slate-500">
                   No assigned internships found.
                 </td>
               </tr>

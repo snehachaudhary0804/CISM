@@ -1,8 +1,4 @@
-const ChartCard = ({
-  title,
-  subtitle,
-  children,
-}) => {
+const ChartCard = ({ title, subtitle, children }) => {
   return (
     <div
       className="
@@ -18,7 +14,6 @@ const ChartCard = ({
         overflow-hidden
       "
     >
-
       {/* Header */}
       <div
         className="
@@ -34,9 +29,8 @@ const ChartCard = ({
          min-w-0
         "
       >
-
         <h2
-         className="
+          className="
          text-lg
          md:text-xl
          font-extrabold
@@ -46,14 +40,15 @@ const ChartCard = ({
          leading-snug
          max-w-full
 
-  ">  {title}
+  "
+        >
+          {" "}
+          {title}
         </h2>
 
-
-        {
-          subtitle && (
-            <p
-              className="
+        {subtitle && (
+          <p
+            className="
                 text-sm
               text-slate-500
                leading-snug
@@ -61,15 +56,11 @@ const ChartCard = ({
               break-words
               whitespace-normal
               "
-            >
-              {subtitle}
-            </p>
-          )
-        }
-
+          >
+            {subtitle}
+          </p>
+        )}
       </div>
-
-
 
       {/* Chart Area */}
 
@@ -85,8 +76,6 @@ const ChartCard = ({
       >
         {children}
       </div>
-
-
     </div>
   );
 };

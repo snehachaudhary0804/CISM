@@ -1,9 +1,4 @@
-import {
-  Briefcase,
-  Upload,
-  FileCheck,
-  UserCircle,
-} from "lucide-react";
+import { Briefcase, Upload, FileCheck, UserCircle } from "lucide-react";
 
 import QuickAction1 from "../../components/dashboard/QuickAction1";
 

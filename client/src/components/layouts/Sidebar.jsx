@@ -65,8 +65,6 @@ const menus = {
         icon: FaChartBar,
       },
     ],
-
-    
   },
 
   student: {
@@ -84,16 +82,12 @@ const menus = {
         path: "/student/internship",
         icon: FaLaptopCode,
       },
-     {
-  name: "Apply Internship",
-  icon: FilePlus,
-  path: "/student/apply-internship",
-}
-      
-
+      {
+        name: "Apply Internship",
+        icon: FilePlus,
+        path: "/student/apply-internship",
+      },
     ],
-
-   
   },
 
   teacher: {
@@ -112,24 +106,14 @@ const menus = {
         icon: FaLaptopCode,
       },
     ],
-
-   
-
-   
   },
 };
-const Sidebar = ({
-  role = "admin",
-  user,
-}) => {
-
-const [collapsed,setCollapsed] = useState(false);
-const { main, management, analytics, system } =
-  menus[role] || menus.admin;
-return (
-
-<aside
-className={`
+const Sidebar = ({ role = "admin", user }) => {
+  const [collapsed, setCollapsed] = useState(false);
+  const { main, management, analytics, system } = menus[role] || menus.admin;
+  return (
+    <aside
+      className={`
 ${collapsed ? "w-24" : "w-64"}
 h-screen
 flex-shrink-0
@@ -143,13 +127,11 @@ border-r
 border-blue-600
 shadow-xl
 `}
->
+    >
+      {/* Logo */}
 
-
-{/* Logo */}
-
-<div
-className="
+      <div
+        className="
 h-20
 border-b
 border-slate-600
@@ -158,38 +140,32 @@ items-center
 justify-between
 px-5
 "
->
-
-
-{
-!collapsed && (
-
-<div>
-
-<h1
-className="
+      >
+        {!collapsed && (
+          <div>
+            <h1
+              className="
 text-3xl
 font-black
 font-extrabold
 tracking-wide
 text-white
 "
->
-CISM
-</h1>
+            >
+              CISM
+            </h1>
 
-
-<p
-className="
+            <p
+              className="
 text-xs
 text-blue-100
 mt-1
 "
->
-Internship Portal
-</p>
-<span
-  className="
+            >
+              Internship Portal
+            </p>
+            <span
+              className="
     inline-block
     mt-3
     px-3
@@ -200,115 +176,59 @@ Internship Portal
     text-xs
     font-semibold
   "
->
-  {role === "student"
-    ? "Student"
-    : role === "teacher"
-    ? "Teacher"
-    : "Administrator"}
-</span>
+            >
+              {role === "student"
+                ? "Student"
+                : role === "teacher"
+                  ? "Teacher"
+                  : "Administrator"}
+            </span>
+          </div>
+        )}
 
-
-</div>
-
-)
-}
-
-
-
-<button
-onClick={()=>setCollapsed(!collapsed)}
-className="
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="
 p-2
 rounded-lg
 hover:bg-blue-800
 transition
 "
->
+        >
+          <FaBars />
+        </button>
+      </div>
 
-<FaBars/>
+      {/* Menu */}
 
-</button>
-
-
-</div>
-
-
-
-
-{/* Menu */}
-
-<div
-className="
+      <div
+        className="
 flex-1
 overflow-y-auto
 px-4
 py-6
 "
->
+      >
+        <div className="space-y-3">
+          <SidebarMenu title="Main" items={main} collapsed={collapsed} />
 
-<div className="space-y-3">
-<SidebarMenu
- title="Main"
- items={main}
- collapsed={collapsed}
-/>
+          <SidebarMenu
+            title="Management"
+            items={management}
+            collapsed={collapsed}
+          />
 
-
-<SidebarMenu
-title="Management"
-items={management}
-collapsed={collapsed}
-/>
-
-
-{role !== "student" && analytics?.length > 0 && (
-  <SidebarMenu
-    title="Analytics"
-    items={analytics}
-    collapsed={collapsed}
-  />
-)}
-
-
-
-
-
-</div>
-
-
-</div>
-
-
-{/* Profile */}
-
-<div className="mt-auto">
-  <SidebarProfile
-  collapsed={collapsed}
-  user={{
-    name:
-  user?.name ||
-  (role === "student"
-    ? "Student"
-    : role === "teacher"
-    ? "Teacher"
-    : "Administrator"),
-
-    role:
-      role === "student"
-        ? "Student"
-        : role === "teacher"
-        ? "Teacher"
-        : "Admin",
-  }}
-/>
-</div>
-</aside>
-
-
-);
-
+          {role !== "student" && analytics?.length > 0 && (
+            <SidebarMenu
+              title="Analytics"
+              items={analytics}
+              collapsed={collapsed}
+            />
+          )}
+        </div>
+      </div>
+    </aside>
+  );
 };
-
 
 export default Sidebar;

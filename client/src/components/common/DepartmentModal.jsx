@@ -10,19 +10,14 @@ const DepartmentModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-
         <h2 className="mb-6 text-2xl font-bold text-slate-800">
           {editingDepartment ? "Edit Department" : "Add Department"}
         </h2>
 
         <form onSubmit={onSubmit} className="space-y-5">
-
           <div>
-            <label className="mb-2 block font-medium">
-              Department Name
-            </label>
+            <label className="mb-2 block font-medium">Department Name</label>
 
             <input
               type="text"
@@ -39,9 +34,7 @@ const DepartmentModal = ({
           </div>
 
           <div>
-            <label className="mb-2 block font-medium">
-              Department Code
-            </label>
+            <label className="mb-2 block font-medium">Department Code</label>
 
             <input
               type="text"
@@ -58,7 +51,6 @@ const DepartmentModal = ({
           </div>
 
           <div className="flex justify-end gap-3">
-
             <button
               type="button"
               onClick={onClose}
@@ -73,13 +65,9 @@ const DepartmentModal = ({
             >
               {editingDepartment ? "Update" : "Save"}
             </button>
-
           </div>
-
         </form>
-
       </div>
-
     </div>
   );
 };

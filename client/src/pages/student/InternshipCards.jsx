@@ -9,17 +9,15 @@ const InternshipCards = ({ internships = [] }) => {
   const total = internships.length;
 
   const active = internships.filter(
-    (item) =>
-      item.status === "Active" ||
-      item.status === "Approved"
+    (item) => item.status === "Active" || item.status === "Approved",
   ).length;
 
   const completed = internships.filter(
-    (item) => item.status === "Completed"
+    (item) => item.status === "Completed",
   ).length;
 
   const pending = internships.filter(
-    (item) => item.status === "Pending"
+    (item) => item.status === "Pending",
   ).length;
 
   const cards = [
@@ -54,7 +52,7 @@ const InternshipCards = ({ internships = [] }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6  mt-8 mb-8">
       {cards.map((card) => {
         const Icon = card.icon;
 
@@ -75,9 +73,7 @@ const InternshipCards = ({ internships = [] }) => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-500">
-                  {card.title}
-                </p>
+                <p className="text-sm text-slate-500">{card.title}</p>
 
                 <h2 className="mt-2 text-3xl font-bold text-slate-800">
                   {card.value}

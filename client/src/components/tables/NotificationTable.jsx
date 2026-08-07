@@ -1,14 +1,5 @@
-import {
-  Eye,
-  Check,
-  Trash2,
-} from "lucide-react";
-const NotificationTable = ({
-  notifications,
-  onDelete,
-  onMarkAsRead,
-}) => {
-
+import { Eye, Check, Trash2 } from "lucide-react";
+const NotificationTable = ({ notifications, onDelete, onMarkAsRead }) => {
   if (!notifications?.length) {
     return (
       <div className="flex justify-center py-16 text-slate-500 font-medium">
@@ -18,15 +9,10 @@ const NotificationTable = ({
   }
 
   return (
-
     <div className="overflow-x-auto">
-
       <table className="w-full min-w-[1200px]">
-
         <thead className="bg-blue-50 border-b border-blue-100">
-
           <tr>
-
             <th className="px-6 py-4 text-left text-sm font-bold uppercase tracking-wide text-blue-700">
               Title
             </th>
@@ -50,15 +36,11 @@ const NotificationTable = ({
             <th className="px-6 py-4 text-center text-sm font-bold uppercase tracking-wide text-blue-700">
               Actions
             </th>
-
           </tr>
-
         </thead>
 
         <tbody>
-
           {notifications.map((notification, index) => (
-
             <tr
               key={notification._id}
               className={`
@@ -69,7 +51,6 @@ const NotificationTable = ({
                 ${index % 2 === 0 ? "bg-white" : "bg-slate-50/40"}
               `}
             >
-
               <td className="px-6 py-4 font-semibold text-slate-800">
                 {notification.title}
               </td>
@@ -89,7 +70,6 @@ const NotificationTable = ({
               </td>
 
               <td className="px-6 py-4 text-center">
-
                 {!notification.isRead ? (
                   <span className="inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
                     Unread
@@ -99,13 +79,10 @@ const NotificationTable = ({
                     Read
                   </span>
                 )}
-
               </td>
 
               <td className="px-6 py-4">
-
                 <div className="flex items-center justify-center gap-2">
-
                   <button
                     className="rounded-lg bg-blue-100 p-2 text-blue-700 hover:bg-blue-200 transition"
                     title="View"
@@ -114,7 +91,7 @@ const NotificationTable = ({
                   </button>
 
                   <button
-                  onClick={() => onMarkAsRead(notification._id)}
+                    onClick={() => onMarkAsRead(notification._id)}
                     className="rounded-lg bg-green-100 p-2 text-green-700 hover:bg-green-200 transition"
                     title="Mark as Read"
                   >
@@ -122,27 +99,19 @@ const NotificationTable = ({
                   </button>
 
                   <button
-                  onClick={() => onDelete(notification._id)}
+                    onClick={() => onDelete(notification._id)}
                     className="rounded-lg bg-red-100 p-2 text-red-700 hover:bg-red-200 transition"
                     title="Delete"
                   >
                     <Trash2 size={17} />
                   </button>
-
                 </div>
-
               </td>
-
             </tr>
-
           ))}
-
         </tbody>
-
       </table>
-
     </div>
-
   );
 };
 

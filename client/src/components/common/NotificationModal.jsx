@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 
-const NotificationModal = ({
-  show,
-  onClose,
-  onSuccess,
-}) => {
+const NotificationModal = ({ show, onClose, onSuccess }) => {
   const [users, setUsers] = useState([]);
 
   const [formData, setFormData] = useState({
@@ -50,19 +46,15 @@ const NotificationModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-
       <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
-
         <h2 className="mb-6 text-2xl font-bold text-slate-800">
           Send Notification
         </h2>
 
         <form className="space-y-5">
-
           {/* Receiver */}
 
           <div>
-
             <label className="mb-2 block font-medium text-slate-700">
               Receiver
             </label>
@@ -77,22 +69,16 @@ const NotificationModal = ({
               <option value="">Select Receiver</option>
 
               {users.map((user) => (
-                <option
-                  key={user._id}
-                  value={user._id}
-                >
+                <option key={user._id} value={user._id}>
                   {user.name} ({user.role})
                 </option>
               ))}
-
             </select>
-
           </div>
 
           {/* Title */}
 
           <div>
-
             <label className="mb-2 block font-medium text-slate-700">
               Title
             </label>
@@ -106,13 +92,11 @@ const NotificationModal = ({
               className="w-full rounded-lg border border-slate-300 px-4 py-2 outline-none focus:border-blue-500"
               required
             />
-
           </div>
 
           {/* Message */}
 
           <div>
-
             <label className="mb-2 block font-medium text-slate-700">
               Message
             </label>
@@ -126,13 +110,11 @@ const NotificationModal = ({
               className="w-full resize-none rounded-lg border border-slate-300 px-4 py-2 outline-none focus:border-blue-500"
               required
             />
-
           </div>
 
           {/* Type */}
 
           <div>
-
             <label className="mb-2 block font-medium text-slate-700">
               Type
             </label>
@@ -148,12 +130,10 @@ const NotificationModal = ({
               <option value="Internship">Internship</option>
               <option value="Reminder">Reminder</option>
             </select>
-
           </div>
-                    {/* Buttons */}
+          {/* Buttons */}
 
           <div className="flex justify-end gap-3 pt-2">
-
             <button
               type="button"
               onClick={() => {
@@ -178,24 +158,16 @@ const NotificationModal = ({
             >
               {loading ? "Sending..." : "Send Notification"}
             </button>
-
           </div>
-
         </form>
-
       </div>
-
     </div>
   );
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if (
-      !formData.receiver ||
-      !formData.title ||
-      !formData.message
-    ) {
+    if (!formData.receiver || !formData.title || !formData.message) {
       alert("Please fill all required fields.");
       return;
     }
@@ -216,14 +188,10 @@ const NotificationModal = ({
 
       onSuccess();
       onClose();
-
     } catch (error) {
       console.error(error.response?.data || error);
 
-      alert(
-        error.response?.data?.message ||
-          "Failed to send notification."
-      );
+      alert(error.response?.data?.message || "Failed to send notification.");
     } finally {
       setLoading(false);
     }

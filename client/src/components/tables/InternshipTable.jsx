@@ -1,10 +1,4 @@
-import {
-  Eye,
-  Pencil,
-  Trash2,
-  CheckCircle,
-  XCircle,
-} from "lucide-react";
+import { Eye, Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
 
 const InternshipTable = ({ internships }) => {
   if (!internships?.length) {
@@ -74,13 +68,9 @@ const InternshipTable = ({ internships }) => {
 
   return (
     <div className="overflow-x-auto">
-
       <table className="w-full min-w-[1400px]">
-
         <thead className="bg-blue-50 border-b border-blue-100">
-
           <tr>
-
             <th className="px-6 py-4 text-left text-sm font-bold uppercase tracking-wide text-blue-700">
               Student
             </th>
@@ -112,15 +102,11 @@ const InternshipTable = ({ internships }) => {
             <th className="px-6 py-4 text-center text-sm font-bold uppercase tracking-wide text-blue-700">
               Actions
             </th>
-
           </tr>
-
         </thead>
 
         <tbody>
-
           {internships.map((item, index) => (
-
             <tr
               key={item._id}
               className={`
@@ -131,18 +117,11 @@ const InternshipTable = ({ internships }) => {
                 ${index % 2 === 0 ? "bg-white" : "bg-slate-50/40"}
               `}
             >
+              <td className="px-6 py-4 font-semibold">{item.student}</td>
 
-              <td className="px-6 py-4 font-semibold">
-                {item.student}
-              </td>
+              <td className="px-6 py-4">{item.company}</td>
 
-              <td className="px-6 py-4">
-                {item.company}
-              </td>
-
-              <td className="px-6 py-4">
-                {item.domain}
-              </td>
+              <td className="px-6 py-4">{item.domain}</td>
 
               <td className="px-6 py-4 text-center">
                 <span className="inline-flex rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
@@ -150,22 +129,16 @@ const InternshipTable = ({ internships }) => {
                 </span>
               </td>
 
-              <td className="px-6 py-4">
-                {item.teacher}
-              </td>
+              <td className="px-6 py-4">{item.teacher}</td>
 
               <td className="px-6 py-4 text-center">
                 {getStatusBadge(item.status)}
               </td>
 
-              <td className="px-6 py-4 text-center">
-                {getNocBadge(item.noc)}
-              </td>
+              <td className="px-6 py-4 text-center">{getNocBadge(item.noc)}</td>
 
               <td className="px-6 py-4">
-
                 <div className="flex items-center justify-center gap-2 flex-wrap">
-
                   <button className="rounded-lg bg-blue-100 p-2 text-blue-700 hover:bg-blue-200 transition">
                     <Eye size={17} />
                   </button>
@@ -185,19 +158,12 @@ const InternshipTable = ({ internships }) => {
                   <button className="rounded-lg bg-red-100 p-2 text-red-700 hover:bg-red-200 transition">
                     <Trash2 size={17} />
                   </button>
-
                 </div>
-
               </td>
-
             </tr>
-
           ))}
-
         </tbody>
-
       </table>
-
     </div>
   );
 };

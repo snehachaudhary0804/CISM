@@ -1,9 +1,4 @@
-import {
-  FaUserCircle,
-  FaCog,
-  FaSignOutAlt,
-} from "react-icons/fa";
-
+import { FaUserCircle, FaCog, FaSignOutAlt } from "react-icons/fa";
 
 const SidebarProfile = ({
   collapsed = false,
@@ -12,33 +7,26 @@ const SidebarProfile = ({
     role: "Admin",
   },
 }) => {
-
-
-return (
-
-<div
-className="
+  return (
+    <div
+      className="
 border-t
 border-blue-600
 p-5
 pb-8
 bg-blue-700
 "
->
+    >
+      {/* User */}
 
-
-{/* User */}
-
-<div
-className={`
+      <div
+        className={`
 flex
 ${collapsed ? "justify-center" : "items-center gap-3"}
 `}
->
-
-
-<div
-className="
+      >
+        <div
+          className="
 w-11
 h-11
 rounded-full
@@ -50,68 +38,46 @@ justify-center
 text-white
 shadow-md
 "
->
+        >
+          <FaUserCircle size={25} />
+        </div>
 
-<FaUserCircle size={25}/>
-
-</div>
-
-
-
-{
-!collapsed && (
-
-<div className="flex-1 min-w-0">
-
-<h3
-className="
+        {!collapsed && (
+          <div className="flex-1 min-w-0">
+            <h3
+              className="
 text-white
 font-bold
 truncate
 "
->
-{user.name}
-</h3>
+            >
+              {user.name}
+            </h3>
 
-
-<p
-className="
+            <p
+              className="
 text-xs
 text-blue-100
 mt-1
 "
->
-{user.role}
-</p>
+            >
+              {user.role}
+            </p>
+          </div>
+        )}
+      </div>
 
+      {/* Actions */}
 
-</div>
-
-)
-}
-
-
-</div>
-
-
-
-
-
-{/* Actions */}
-
-{
-!collapsed && (
-
-<div
-className="
+      {!collapsed && (
+        <div
+          className="
 mt-4
 space-y-2
 "
->
-
-
-<button
-className="
+        >
+          <button
+            className="
 w-full
 flex
 items-center
@@ -126,22 +92,14 @@ hover:bg-blue-600
 hover:text-white
 transition
 "
->
+          >
+            <FaCog />
 
-<FaCog/>
+            <span>Settings</span>
+          </button>
 
-<span>
-Settings
-</span>
-
-</button>
-
-
-
-
-
-<button
-className="
+          <button
+            className="
 w-full
 flex
 items-center
@@ -155,30 +113,15 @@ text-red-400
 hover:bg-red-500/25
 transition
 "
->
+          >
+            <FaSignOutAlt />
 
-<FaSignOutAlt/>
-
-<span>
-Logout
-</span>
-
-</button>
-
-
-
-</div>
-
-)
-}
-
-
-</div>
-
-
-);
-
+            <span>Logout</span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
 };
-
 
 export default SidebarProfile;

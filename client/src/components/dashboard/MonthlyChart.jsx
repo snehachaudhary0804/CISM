@@ -15,22 +15,19 @@ const MonthlyChart = ({ data }) => {
     <ChartCard title="Monthly Internship Analytics">
       <ResponsiveContainer width="100%" height={320}>
         <LineChart data={data || []}>
-          <CartesianGrid
-             strokeDasharray="3 3"
-             vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
 
           <XAxis dataKey="month" />
 
           <YAxis />
 
           <Tooltip
-             contentStyle={{
-               borderRadius: "12px",
-               border: "none",
-               boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-             }}
-           />
+            contentStyle={{
+              borderRadius: "12px",
+              border: "none",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+            }}
+          />
 
           <Line
             type="monotone"

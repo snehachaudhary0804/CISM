@@ -12,15 +12,12 @@ const SectionModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-
       <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
-
         <h2 className="mb-6 text-2xl font-bold text-slate-800">
           {editingSection ? "Edit Section" : "Add Section"}
         </h2>
 
         <form onSubmit={onSubmit} className="space-y-5">
-
           {/* Section Name */}
 
           <div>
@@ -64,14 +61,10 @@ const SectionModal = ({
               <option value="">Select Department</option>
 
               {departments.map((department) => (
-                <option
-                  key={department._id}
-                  value={department._id}
-                >
+                <option key={department._id} value={department._id}>
                   {department.departmentName}
                 </option>
               ))}
-
             </select>
           </div>
 
@@ -96,21 +89,16 @@ const SectionModal = ({
               <option value="">Select Academic Session</option>
 
               {sessions.map((session) => (
-                <option
-                  key={session._id}
-                  value={session._id}
-                >
+                <option key={session._id} value={session._id}>
                   {session.sessionName}
                 </option>
               ))}
-
             </select>
           </div>
 
           {/* Buttons */}
 
           <div className="flex justify-end gap-3 pt-2">
-
             <button
               type="button"
               onClick={onClose}
@@ -125,13 +113,9 @@ const SectionModal = ({
             >
               {editingSection ? "Update Section" : "Save Section"}
             </button>
-
           </div>
-
         </form>
-
       </div>
-
     </div>
   );
 };

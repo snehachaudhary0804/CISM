@@ -1,24 +1,14 @@
 import { useEffect, useState } from "react";
-import {
-  X,
-  Save,
-  Loader2,
-  UserPlus,
-  UserPen,
-} from "lucide-react";
+import { X, Save, Loader2, UserPlus, UserPen } from "lucide-react";
 
 import {
-  
   updateStudent,
   getAllDepartments,
   getAllSections,
   getAllAcademicSessions,
 } from "../../services/adminService";
 
-
-import {
- registerUser,
-} from "../../services/authService";
+import { registerUser } from "../../services/authService";
 
 const StudentModal = ({
   open,
@@ -27,7 +17,7 @@ const StudentModal = ({
   setFormData,
   editingStudent,
   fetchStudents,
-  updateStudent
+  updateStudent,
 }) => {
   const [departments, setDepartments] = useState([]);
   const [sections, setSections] = useState([]);
@@ -66,46 +56,32 @@ const StudentModal = ({
     }));
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
+    try {
+      if (editingStudent) {
+        await updateStudent(editingStudent._id, formData);
 
-    if (editingStudent) {
+        alert("Student updated successfully");
+      }
 
-      await updateStudent(
-        editingStudent._id,
-        formData
-      );
+      fetchStudents();
 
-      alert("Student updated successfully");
-
-    } 
-
-    fetchStudents();
-
-    onClose();
-
-  } catch(error) {
-
-    console.error(error);
-    alert("Failed to update student");
-
-  }
-};
+      onClose();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update student");
+    }
+  };
   if (!open) return null;
-    return (
+  return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden">
-
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200 bg-blue-600">
           <div className="flex items-center gap-3 text-white">
-            {editingStudent ? (
-              <UserPen size={24} />
-            ) : (
-              <UserPlus size={24} />
-            )}
+            {editingStudent ? <UserPen size={24} /> : <UserPlus size={24} />}
 
             <div>
               <h2 className="text-2xl font-bold">
@@ -129,9 +105,7 @@ const StudentModal = ({
         </div>
 
         <form onSubmit={handleSubmit}>
-
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
-
             {/* Name */}
             <div>
               <label className="block mb-2 font-medium text-slate-700">
@@ -294,7 +268,7 @@ const StudentModal = ({
                 onChange={handleChange}
                 className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
               >
-                {[1,2,3,4,5,6,7,8].map((sem) => (
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
                   <option key={sem} value={sem}>
                     Semester {sem}
                   </option>
@@ -318,11 +292,9 @@ const StudentModal = ({
                 </span>
               </label>
             </div>
-
           </div>
-                    {/* Footer */}
+          {/* Footer */}
           <div className="flex justify-end gap-3 px-6 py-5 border-t border-slate-200 bg-slate-50">
-
             <button
               type="button"
               onClick={onClose}
@@ -349,9 +321,7 @@ const StudentModal = ({
                 </>
               )}
             </button>
-
           </div>
-
         </form>
       </div>
     </div>

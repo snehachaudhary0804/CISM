@@ -16,7 +16,6 @@ const OverviewCard = ({ overview }) => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-2 2xl:grid-cols-4 gap-8">
-
       <StatCard
         title="Students"
         value={overview.totalStudents ?? 0}
@@ -72,7 +71,6 @@ const OverviewCard = ({ overview }) => {
         icon={<FaBell />}
         color="bg-pink-600"
       />
-
     </div>
   );
 };

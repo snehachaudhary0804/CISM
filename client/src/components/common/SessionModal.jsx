@@ -11,13 +11,11 @@ const SessionModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
-
         <h2 className="mb-6 text-2xl font-bold text-slate-800">
           {editingSession ? "Edit Academic Session" : "Add Academic Session"}
         </h2>
 
         <form onSubmit={onSubmit} className="space-y-5">
-
           {/* Session Name */}
           <div>
             <label className="mb-2 block font-medium text-slate-700">
@@ -47,7 +45,6 @@ const SessionModal = ({
 
             <input
               type="Date"
-            
               value={formData.startDate}
               onChange={(e) =>
                 setFormData({
@@ -68,7 +65,6 @@ const SessionModal = ({
 
             <input
               type="Date"
-              
               value={formData.endDate}
               onChange={(e) =>
                 setFormData({
@@ -85,8 +81,7 @@ const SessionModal = ({
           <div className="flex items-center gap-3">
             <input
               id="isActive"
-               type="checkbox"
-              
+              type="checkbox"
               checked={formData.isActive}
               onChange={(e) =>
                 setFormData({
@@ -97,17 +92,13 @@ const SessionModal = ({
               className="h-4 w-4"
             />
 
-            <label
-              htmlFor="isActive"
-              className="font-medium text-slate-700"
-            >
+            <label htmlFor="isActive" className="font-medium text-slate-700">
               Active Academic Session
             </label>
           </div>
 
           {/* Buttons */}
           <div className="flex justify-end gap-3 pt-2">
-
             <button
               type="button"
               onClick={onClose}
@@ -122,11 +113,8 @@ const SessionModal = ({
             >
               {editingSession ? "Update Session" : "Save Session"}
             </button>
-
           </div>
-
         </form>
-
       </div>
     </div>
   );

@@ -36,10 +36,8 @@ const DashboardHero = ({
           gap-8
         "
       >
-
         {/* Welcome Section */}
         <div className="flex-1 min-w-0 w-full text-center flex flex-col items-center">
-
           <p
             className="
               text-xs
@@ -55,7 +53,6 @@ const DashboardHero = ({
             College Internship Management System
           </p>
 
-
           <h1
             className="
               mt-4
@@ -68,12 +65,11 @@ const DashboardHero = ({
               whitespace-normal
             "
           >
-            Welcome {user} 
+            Welcome {user}
           </h1>
 
-
-         <p
-  className="
+          <p
+            className="
     mt-4
     px-2
     max-w-xl
@@ -83,13 +79,10 @@ const DashboardHero = ({
     leading-7
     text-base
   "
->
-  {subtitle}
-</p>
-
+          >
+            {subtitle}
+          </p>
         </div>
-
-
 
         {/* Today's Overview Card */}
         <div
@@ -108,25 +101,19 @@ const DashboardHero = ({
             items-center
           "
         >
-
-          <p className="text-blue-100 text-sm font-semibold">
-  {overviewTitle}
-</p>
-
+          <p className="text-blue-100 text-sm font-semibold">{overviewTitle}</p>
 
           <h2 className="mt-3 text-3xl md:text-4xl leading-none font-extrabold">
-  {overviewValue}
-</h2>
-
+            {overviewValue}
+          </h2>
 
           <p className="mt-3 text-blue-100 leading-relaxed text-sm break-words">
-  {overviewText}
-</p>
+            {overviewText}
+          </p>
 
-
-         <button
-  onClick={onButtonClick}
-  className="
+          <button
+            onClick={onButtonClick}
+            className="
     mt-6
     w-full
     max-w-[260px]
@@ -140,13 +127,10 @@ const DashboardHero = ({
     hover:bg-slate-100
     transition
   "
->
-  {buttonText}
-</button>
-
-
+          >
+            {buttonText}
+          </button>
         </div>
-
       </div>
     </div>
   );

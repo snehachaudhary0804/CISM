@@ -1,4 +1,3 @@
-
 import api from "./api";
 
 // Get Students
@@ -25,10 +24,6 @@ export const deleteStudent = async (id) => {
   return response.data;
 };
 
-
-
-
-
 //teachers
 export const getAllTeachers = async () => {
   const response = await api.get("/admin/teachers");
@@ -53,9 +48,12 @@ export const registerTeacher = async (data) => {
   return response.data;
 };
 
+export const assignTeacher = async (internshipId, teacherId) => {
+  const response = await api.put(
+    `/internships/assign-teacher/${internshipId}`,
+    { teacherId },
+  );
 
-export const assignTeacher = async (data) => {
-  const response = await api.post("/admin/assign-teacher", data);
   return response.data;
 };
 
@@ -63,8 +61,6 @@ export const getDashboardData = async () => {
   const response = await api.get("/admin/dashboard");
   return response.data;
 };
-
-
 
 export const getAllSections = async () => {
   const response = await api.get("/sections");
@@ -84,43 +80,37 @@ export const getAllInternships = async () => {
 };
 
 export const approveInternship = async (id) => {
-  const response = await api.patch(
-    `/admin/internships/${id}/approve`
-  );
+  const response = await api.patch(`/admin/internships/${id}/approve`);
 
   return response.data;
 };
 
-export const rejectInternship = async (
-  internshipId,
-  remarks
-) => {
+export const rejectInternship = async (internshipId, remarks) => {
   const response = await api.patch(
     `/admin/internships/${internshipId}/reject`,
-    { remarks }
+    { remarks },
   );
 
   return response.data;
 };
 export const completeInternship = async (internshipId) => {
-  const response = await api.put(
-    `/admin/internship/${internshipId}/complete`
-  );
+  const response = await api.put(`/admin/internship/${internshipId}/complete`);
 
   return response.data;
 };
 export const getAllDepartments = async () => {
-  const response = await api.get(
-    
-    "/departments"
-  );
+  const response = await api.get("/departments");
 
   return response.data;
 };
 export const generateNOC = async (data) => {
-  console.log("Generate NOC Payload:", data);
+
 
   const response = await api.post("/nocs", data);
 
+  return response.data;
+};
+export const getAllDomains = async () => {
+  const response = await api.get("/domains");
   return response.data;
 };

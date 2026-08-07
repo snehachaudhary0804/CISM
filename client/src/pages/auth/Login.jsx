@@ -10,11 +10,11 @@ import {
   FaEye,
   FaEyeSlash,
 } from "react-icons/fa";
+import { FaGraduationCap } from "react-icons/fa";
 
 import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
-
   const navigate = useNavigate();
 
   const { login } = useAuth();
@@ -36,11 +36,9 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     try {
-
       setLoading(true);
 
       const user = await login(formData);
@@ -52,32 +50,23 @@ const Login = () => {
       } else {
         navigate("/student/dashboard");
       }
-
     } catch (error) {
-
       console.log(error.response);
 
       alert(error.response?.data?.message || error.message);
-
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
   return (
     <div className="login-container">
-
       {/* Left Panel */}
 
       <div className="login-left">
-
         <div className="brand">
-
           <div className="logo">
-            CISM
+            <FaGraduationCap size={38} />
           </div>
 
           <h1>CISM</h1>
@@ -85,12 +74,11 @@ const Login = () => {
           <h3>Internship Management System</h3>
 
           <p>
-            Manage internships efficiently for students,
-            faculty and administrators.
+            Manage internships efficiently for students, faculty and
+            administrators.
           </p>
 
           <div className="features">
-
             <div className="feature">
               <FaCheckCircle />
               <span>Internship Tracking</span>
@@ -110,26 +98,19 @@ const Login = () => {
               <FaCheckCircle />
               <span>Reports & Analytics</span>
             </div>
-
           </div>
-
         </div>
-
       </div>
 
       {/* Right Panel */}
 
       <div className="login-right">
-
         <div className="login-card">
+          <h2>Welcome Back</h2>
+          <p>Sign in to access your dashboard</p>
 
-          <h2>Welcome Back 👋</h2>
-
-          <p>Sign in to continue.</p>
-
-          <form onSubmit={handleSubmit}>            
+          <form onSubmit={handleSubmit}>
             <div className="input-group">
-
               <FaUser className="input-icon" />
 
               <input
@@ -140,11 +121,9 @@ const Login = () => {
                 onChange={handleChange}
                 required
               />
-
             </div>
 
             <div className="input-group">
-
               <FaLock className="input-icon" />
 
               <input
@@ -163,23 +142,14 @@ const Login = () => {
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
-
             </div>
 
-            <button
-              type="submit"
-              className="login-btn"
-              disabled={loading}
-            >
-              {loading ? "Signing In..." : "Sign In"}
+            <button type="submit" className="login-btn" disabled={loading}>
+              {loading ? "Signing In..." : "Sign In Securely"}
             </button>
-
           </form>
-
         </div>
-
       </div>
-
     </div>
   );
 };

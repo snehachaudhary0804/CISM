@@ -1,35 +1,26 @@
 import { useState } from "react";
-import {
-  FaBell,
-  FaChevronDown,
-} from "react-icons/fa";
+import { FaBell, FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-const Header = ({
-  role = "admin",
-  user,
-}) => {
-
-
+const Header = ({ role = "admin", user }) => {
   const [open, setOpen] = useState(false);
-const navigate = useNavigate();
-const { logout } = useAuth();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
   });
-const dashboardTitle =
-  role === "student"
-    ? "Student Dashboard"
-    : role === "teacher"
-    ? "Teacher Dashboard"
-    : "Admin Dashboard";
+  const dashboardTitle =
+    role === "student"
+      ? "Student Dashboard"
+      : role === "teacher"
+        ? "Teacher Dashboard"
+        : "Admin Dashboard";
 
   return (
-
     <header
       className="
         sticky
@@ -44,8 +35,6 @@ const dashboardTitle =
         py-4
       "
     >
-
-
       <div
         className="
           flex
@@ -54,12 +43,9 @@ const dashboardTitle =
           gap-4
         "
       >
-
-
         {/* Left */}
 
         <div>
-
           <h1
             className="
               text-xl
@@ -68,9 +54,8 @@ const dashboardTitle =
               text-blue-700
             "
           >
-           {dashboardTitle}
+            {dashboardTitle}
           </h1>
-
 
           <p
             className="
@@ -81,12 +66,7 @@ const dashboardTitle =
           >
             {today}
           </p>
-
-
         </div>
-
-
-
 
         {/* Right */}
 
@@ -114,9 +94,7 @@ const dashboardTitle =
               justify-center
             "
           >
-
-            <FaBell/>
-
+            <FaBell />
 
             <span
               className="
@@ -136,22 +114,13 @@ const dashboardTitle =
             >
               3
             </span>
-
-
           </button>
-
-
-
-
-
 
           {/* Profile */}
 
           <div className="relative">
-
-
             <button
-              onClick={()=>setOpen(!open)}
+              onClick={() => setOpen(!open)}
               className="
                 flex
                 items-center
@@ -164,8 +133,6 @@ const dashboardTitle =
                 rounded-xl
               "
             >
-
-
               <div
                 className="
                   w-10
@@ -179,46 +146,29 @@ const dashboardTitle =
                   font-bold
                 "
               >
-               {user?.name?.charAt(0).toUpperCase() || "A"}
+                {user?.name?.charAt(0).toUpperCase() || "A"}
               </div>
-
-
 
               <div className="hidden md:block text-left">
+                <h3 className="font-bold text-slate-800">
+                  {user?.name || "Administrator"}
+                </h3>
 
-               <h3 className="font-bold text-slate-800">
- {user?.name || "Administrator"}
-</h3>
-
-
-               <p className="text-xs text-slate-500">
-  {role === "student"
-    ? "Student"
-    : role === "teacher"
-    ? "Teacher"
-    : "Admin"}
-</p>
-
-
+                <p className="text-xs text-slate-500">
+                  {role === "student"
+                    ? "Student"
+                    : role === "teacher"
+                      ? "Teacher"
+                      : "Admin"}
+                </p>
               </div>
 
-
-
-              <FaChevronDown size={14}/>
-
-
-
+              <FaChevronDown size={14} />
             </button>
 
-
-
-
-
-            {
-              open && (
-
-                <div
-                  className="
+            {open && (
+              <div
+                className="
                     absolute
                     right-0
                     mt-3
@@ -230,70 +180,59 @@ const dashboardTitle =
                     shadow-xl
                     overflow-hidden
                   "
-                >
+              >
+                <button
+                  onClick={() => {
+                    if (role === "admin") {
+                      navigate("/admin/profile");
+                    } else if (role === "teacher") {
+                      navigate("/teacher/profile");
+                    } else {
+                      navigate("/student/profile");
+                    }
 
-                 <button
-                 onClick={() => {
-
-    if(role === "admin"){
-        navigate("/admin/profile");
-    }
-    else if(role === "teacher"){
-        navigate("/teacher/profile");
-    }
-    else{
-        navigate("/student/profile");
-    }
-
-    setOpen(false);
-
-}}
-  className="
+                    setOpen(false);
+                  }}
+                  className="
     w-full
     text-left
     px-5
     py-3
     hover:bg-blue-50
   "
->
-  Profile
-</button>
+                >
+                  Profile
+                </button>
 
-                 <button
-  onClick={() => {
+                <button
+                  onClick={() => {
+                    if (role === "admin") {
+                      navigate("/admin/settings");
+                    } else if (role === "teacher") {
+                      navigate("/teacher/settings");
+                    } else {
+                      navigate("/student/settings");
+                    }
 
-    if(role === "admin"){
-        navigate("/admin/settings");
-    }
-    else if(role === "teacher"){
-        navigate("/teacher/settings");
-    }
-    else{
-        navigate("/student/settings");
-    }
-
-    setOpen(false);
-
-}}
-className="
+                    setOpen(false);
+                  }}
+                  className="
     w-full
     text-left
     px-5
     py-3
     hover:bg-slate-100
   "
->
-  Settings
-</button>
-         <button
-onClick={() => {
+                >
+                  Settings
+                </button>
+                <button
+                  onClick={() => {
+                    logout();
 
-    logout();
-
-    navigate("/login");
-
-}}
-  className="
+                    navigate("/login");
+                  }}
+                  className="
     w-full
     text-left
     px-5
@@ -301,30 +240,16 @@ onClick={() => {
     text-red-500
     hover:bg-red-50
   "
->
-  Logout
-</button>
-
-                </div>
-
-              )
-            }
-
-
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
-
-
         </div>
-
-
       </div>
-
-
     </header>
-
   );
-
 };
-
 
 export default Header;

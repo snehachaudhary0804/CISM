@@ -28,10 +28,7 @@ const TeacherModal = ({
         phone: teacher.phone || "",
         designation: teacher.designation || "",
         password: "",
-        department:
-          teacher.department?._id ||
-          teacher.department ||
-          "",
+        department: teacher.department?._id || teacher.department || "",
       });
     } else {
       setFormData({
@@ -66,32 +63,25 @@ const TeacherModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
-
         {/* Header */}
         <div className="flex items-center justify-between bg-blue-600 px-6 py-4">
           <h2 className="text-xl font-bold text-white">
             {mode === "add"
               ? "Add Teacher"
               : mode === "edit"
-              ? "Edit Teacher"
-              : "Teacher Details"}
+                ? "Edit Teacher"
+                : "Teacher Details"}
           </h2>
 
-          <button
-            onClick={onClose}
-            className="text-white hover:text-gray-200"
-          >
+          <button onClick={onClose} className="text-white hover:text-gray-200">
             <X size={22} />
           </button>
         </div>
 
         {/* Body */}
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
-
           <div>
-            <label className="block text-sm font-semibold mb-2">
-              Name
-            </label>
+            <label className="block text-sm font-semibold mb-2">Name</label>
             <input
               name="name"
               value={formData.name}
@@ -115,9 +105,7 @@ const TeacherModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold mb-2">
-              Email
-            </label>
+            <label className="block text-sm font-semibold mb-2">Email</label>
             <input
               name="email"
               type="email"
@@ -129,9 +117,7 @@ const TeacherModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold mb-2">
-              Phone
-            </label>
+            <label className="block text-sm font-semibold mb-2">Phone</label>
             <input
               name="phone"
               value={formData.phone}
@@ -191,12 +177,10 @@ const TeacherModal = ({
               />
             </div>
           )}
-
         </div>
 
         {/* Footer */}
         <div className="flex justify-end gap-3 border-t px-6 py-4 bg-slate-50">
-
           <button
             onClick={onClose}
             className="px-5 py-2 rounded-xl border border-slate-300 hover:bg-slate-100"
@@ -212,7 +196,6 @@ const TeacherModal = ({
               {mode === "add" ? "Create Teacher" : "Update Teacher"}
             </button>
           )}
-
         </div>
       </div>
     </div>

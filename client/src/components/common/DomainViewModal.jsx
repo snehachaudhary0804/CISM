@@ -4,32 +4,22 @@ const DomainViewModal = ({ show, onClose, domain }) => {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl w-full max-w-lg p-6">
-        <h2 className="text-2xl font-bold mb-6">
-          Domain Details
-        </h2>
+        <h2 className="text-2xl font-bold mb-6">Domain Details</h2>
 
         <div className="space-y-4">
           <div>
-            <label className="font-semibold text-gray-600">
-              Domain Name
-            </label>
+            <label className="font-semibold text-gray-600">Domain Name</label>
             <p>{domain.domainName}</p>
           </div>
 
           <div>
-            <label className="font-semibold text-gray-600">
-              Description
-            </label>
+            <label className="font-semibold text-gray-600">Description</label>
             <p>{domain.description || "N/A"}</p>
           </div>
 
           <div>
-            <label className="font-semibold text-gray-600">
-              Created At
-            </label>
-            <p>
-              {new Date(domain.createdAt).toLocaleDateString()}
-            </p>
+            <label className="font-semibold text-gray-600">Created At</label>
+            <p>{new Date(domain.createdAt).toLocaleDateString()}</p>
           </div>
         </div>
 

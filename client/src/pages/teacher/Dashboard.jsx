@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { getTeacherDashboard } from "../../services/teacherService";
 
-import {
-  Users,
-  Clock,
-  CheckCircle,
-  XCircle,
-} from "lucide-react";
+import { Users, Clock, CheckCircle, XCircle } from "lucide-react";
 
 import DashboardHero from "../../components/dashboard/DashboardHero";
 import StatCard from "../../components/dashboard/StatCard";
@@ -27,11 +22,7 @@ import {
   YAxis,
 } from "recharts";
 
-const COLORS = [
-  "#F59E0B",
-  "#22C55E",
-  "#EF4444",
-];
+const COLORS = ["#F59E0B", "#22C55E", "#EF4444"];
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -46,7 +37,7 @@ const Dashboard = () => {
       const response = await getTeacherDashboard();
       setDashboardData(response);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -128,15 +119,15 @@ const Dashboard = () => {
   }, []);
 
   return (
-  
     <div className="min-h-screen bg-slate-50 space-y-4">
-      <DashboardHero 
-       user="Teacher"
-  subtitle="Manage assigned students, review internships, approve requests and monitor student progress."
-  overviewTitle="Pending Reviews"
-  overviewValue={dashboardData.pending || 0}
-  overviewText="Internship requests waiting for your review"
-  buttonText="Review Internships"/>
+      <DashboardHero
+        user="Teacher"
+        subtitle="Manage assigned students, review internships, approve requests and monitor student progress."
+        overviewTitle="Pending Reviews"
+        overviewValue={dashboardData.pending || 0}
+        overviewText="Internship requests waiting for your review"
+        buttonText="Review Internships"
+      />
 
       {/* Statistics */}
 
@@ -147,10 +138,7 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           {stats.map((item, index) => (
-            <StatCard
-              key={index}
-              {...item}
-            />
+            <StatCard key={index} {...item} />
           ))}
         </div>
       </section>
@@ -167,10 +155,7 @@ const Dashboard = () => {
             title="Approval Status"
             subtitle="Assigned internship status"
           >
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-            >
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={approvalData}
@@ -180,10 +165,7 @@ const Dashboard = () => {
                   label
                 >
                   {approvalData.map((_, index) => (
-                    <Cell
-                      key={index}
-                      fill={COLORS[index]}
-                    />
+                    <Cell key={index} fill={COLORS[index]} />
                   ))}
                 </Pie>
 
@@ -197,41 +179,27 @@ const Dashboard = () => {
             title="Students by Domain"
             subtitle="Assigned internship domains"
           >
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-            >
+            <ResponsiveContainer width="100%" height="100%">
               <BarChart data={domainData}>
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
 
-                <Bar
-                  dataKey="value"
-                  fill="#2563EB"
-                  radius={[8, 8, 0, 0]}
-                />
+                <Bar dataKey="value" fill="#2563EB" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
         </div>
       </section>
 
-    
-
       {/* Quick Actions */}
 
       <section>
         <div className="w-full">
-          <h2 className="text-4xl font-bold text-center text-slate-800 mb-3">
-            Quick Action
-          </h2>
-
           <TeacherQuickActions />
         </div>
       </section>
     </div>
-    
   );
 };
 

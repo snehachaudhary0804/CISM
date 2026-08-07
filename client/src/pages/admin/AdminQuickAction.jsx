@@ -1,9 +1,4 @@
-import {
-  Users,
-  UserCog,
-  FileCheck,
-  BarChart3,
-} from "lucide-react";
+import { Users, UserCog, FileCheck, BarChart3 } from "lucide-react";
 
 import QuickAction1 from "../../components/dashboard/QuickAction1";
 

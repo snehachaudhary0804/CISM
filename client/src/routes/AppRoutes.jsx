@@ -24,7 +24,6 @@ import AdminSettings from "../pages/admin/AdminSettings";
 import Internships from "../pages/teacher/Internships";
 import TeacherDashboard from "../pages/teacher/Dashboard";
 
-
 // Student
 import StudentDashboard from "../pages/student/Dashboard";
 import Internship from "../pages/student/Internship";
@@ -58,48 +57,38 @@ const AppRoutes = () => {
       {/* ---------------- TEACHER ---------------- */}
       <Route element={<ProtectedRoute allowedRoles={["teacher"]} />}>
         <Route element={<DashboardLayout />}>
-
-
-    <Route 
-      path="/teacher/dashboard" 
-      element={<TeacherDashboard />} 
-    />
-
-    <Route 
-      path="/teacher/internships" 
-      element={<Internships />} 
-    />
-    
-
-  </Route>
+          <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+          <Route path="/teacher/internships" element={<Internships />} />
+        </Route>
       </Route>
 
       {/* ---------------- STUDENT ---------------- */}
       <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
-    
+        <Route element={<DashboardLayout />}>
           <Route path="/student/dashboard" element={<StudentDashboard />} />
           <Route path="/student/internship" element={<Internship />} />
-           <Route path="/student/profile"element={<StudentProfile />}/>    
-           <Route path="/student/settings"element={<StudentSettings />}/>
-           <Route
-  path="/student/apply-internship"
-  element={<ApplyInternship />}
-/>
-     </Route>
+          <Route path="/student/profile" element={<StudentProfile />} />
+          <Route path="/student/settings" element={<StudentSettings />} />
+          <Route
+            path="/student/apply-internship"
+            element={<ApplyInternship />}
+          />
+        </Route>
+      </Route>
 
       {/* Default */}
-      <Route element={<ProtectedRoute allowedRoles={["student", "teacher", "admin"]} />}>
-  <Route
-    path="/change-password"
-    element={<ChangePassword />}
-  />
-</Route>
+      <Route
+        element={
+          <ProtectedRoute allowedRoles={["student", "teacher", "admin"]} />
+        }
+      >
+        <Route path="/change-password" element={<ChangePassword />} />
+      </Route>
       <Route path="/" element={<Navigate to="/login" replace />} />
 
       {/* 404 */}
       <Route path="*" element={<h2>404 - Page Not Found</h2>} />
     </Routes>
-      
   );
 };
 

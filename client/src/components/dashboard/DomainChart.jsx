@@ -25,21 +25,18 @@ const DomainChart = ({ data }) => {
       <ResponsiveContainer width="100%" height={320}>
         <PieChart>
           <Pie
-             isAnimationActive
-             animationDuration={1000}
+            isAnimationActive
+            animationDuration={1000}
             data={data || []}
             dataKey="totalInternships"
             nameKey="domainName"
             outerRadius={110}
             label={({ name, percent }) =>
-               `${name} (${(percent * 100).toFixed(0)}%)`
-             }
+              `${name} (${(percent * 100).toFixed(0)}%)`
+            }
           >
             {(data || []).map((entry, index) => (
-              <Cell
-                key={index}
-                fill={COLORS[index % COLORS.length]}
-              />
+              <Cell key={index} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
 

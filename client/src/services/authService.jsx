@@ -10,22 +10,16 @@ export const getProfile = async () => {
   return data;
 };
 export const registerUser = async (data) => {
-  const response = await API.post("/auth/register",data);
+  const response = await API.post("/auth/register", data);
   return response.data;
 };
 export const updateProfile = async (profileData) => {
-    const { data } = await API.patch(
-        "/auth/profile",
-        profileData
-    );
+  const { data } = await API.patch("/auth/profile", profileData);
 
-    return data;
+  return data;
 };
 export const changePassword = async (passwordData) => {
-  const { data } = await API.patch(
-    "/auth/change-password",
-    passwordData
-  );
+  const { data } = await API.patch("/auth/change-password", passwordData);
 
   return data;
 };

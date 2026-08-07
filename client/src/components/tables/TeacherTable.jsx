@@ -1,11 +1,6 @@
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
-const TeacherTable = ({
-  teachers,
-  onView,
-  onEdit,
-  onDelete,
-}) => {
+const TeacherTable = ({ teachers, onView, onEdit, onDelete }) => {
   if (!teachers?.length) {
     return (
       <div className="flex items-center justify-center py-16 text-slate-500 font-medium">
@@ -57,9 +52,7 @@ const TeacherTable = ({
                 index % 2 === 0 ? "bg-white" : "bg-slate-50/40"
               }`}
             >
-              <td className="px-6 py-4 font-medium">
-                {teacher.employeeId}
-              </td>
+              <td className="px-6 py-4 font-medium">{teacher.employeeId}</td>
 
               <td className="px-6 py-4 font-semibold text-slate-800">
                 {teacher.name}
@@ -71,13 +64,9 @@ const TeacherTable = ({
                   "-"}
               </td>
 
-              <td className="px-6 py-4">
-                {teacher.email}
-              </td>
+              <td className="px-6 py-4">{teacher.email}</td>
 
-              <td className="px-6 py-4">
-                {teacher.phone || "-"}
-              </td>
+              <td className="px-6 py-4">{teacher.phone || "-"}</td>
 
               <td className="px-6 py-4">
                 {teacher.isActive ? (

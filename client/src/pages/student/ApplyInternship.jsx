@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import DashboardHero from "../../components/dashboard/DashboardHero";
-
+import axios from "axios";
+import {
+  getAllDepartments,
+  getAllAcademicSessions,
+  getAllDomains,
+} from "../../services/adminService";
 import {
   Building2,
   GraduationCap,
@@ -15,13 +20,17 @@ import {
 
 const ApplyInternship = () => {
   const [internshipType, setInternshipType] = useState("External");
-
+  const [departments, setDepartments] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [domains, setDomains] = useState([]);
   const [formData, setFormData] = useState({
+    department: "",
+    academicSession: "",
+    domain: "",
     companyName: "",
     companyAddress: "",
     hrName: "",
     hrEmail: "",
-    domain: "",
     duration: "",
     startDate: "",
     endDate: "",
@@ -29,6 +38,25 @@ const ApplyInternship = () => {
     offerLetter: null,
   });
 
+  useEffect(() => {
+    loadDropdowns();
+  }, []);
+
+  const loadDropdowns = async () => {
+    try {
+      const [deptRes, sessionRes, domainRes] = await Promise.all([
+        getAllDepartments(),
+        getAllAcademicSessions(),
+        getAllDomains(),
+      ]);
+
+      setDepartments(deptRes.data || []);
+      setSessions(sessionRes.data || []);
+      setDomains(domainRes.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
@@ -38,157 +66,223 @@ const ApplyInternship = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
+    try {
+      const token = localStorage.getItem("token");
 
-    // Backend Integration Next
+      const payload = {
+        department: formData.department,
+        academicSession: formData.academicSession,
+        domain: formData.domain,
+        internshipType,
+
+        externalDetails:
+          internshipType === "External"
+            ? {
+                companyName: formData.companyName,
+                companyAddress: formData.companyAddress,
+                hrName: formData.hrName,
+                hrEmail: formData.hrEmail,
+                duration: formData.duration,
+                startDate: formData.startDate,
+                endDate: formData.endDate,
+                remarks: formData.remarks,
+              }
+            : undefined,
+
+        inHouseDetails:
+          internshipType === "In-House"
+            ? {
+                duration: formData.duration,
+                remarks: formData.remarks,
+              }
+            : undefined,
+      };
+      const response = await axios.post(
+        "http://localhost:5000/api/v1/internships",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      alert(response.data.message);
+      console.log(response.data);
+
+      // Optional: Reset form
+      // setFormData(initialState);
+    } catch (error) {
+      console.error(error.response?.data || error);
+
+      alert(error.response?.data?.message || "Failed to submit internship.");
+    }
   };
 
   return (
-    <DashboardLayout role="student">
-
+    
       <div className="space-y-8 pb-10">
-
-        <DashboardHero
-  user="Student"
-  subtitle="Apply for an External or In-House Internship. Submit your application for approval and track every stage from one place."
-  overviewTitle="Apply Internship"
-  overviewValue={
-    internshipType === "External"
-      ? "External Internship"
-      : "In-House Internship"
-  }
-  overviewText={
-    internshipType === "External"
-      ? "Request NOC for your selected company."
-      : "Apply for an internship offered by your college."
-  }
-  buttonText="My Internships"
-/>
-
         {/* Internship Type */}
 
         <div className="grid md:grid-cols-2 gap-6">
-
-          {/* External */}
-
+          {/* External Internship */}
           <div
-  onClick={() => setInternshipType("External")}
-  className={`
-    cursor-pointer
-    rounded-3xl
-    border
-    p-8
-    transition-all
-    duration-300
-    hover:-translate-y-2
-    hover:shadow-xl
-    ${
-      internshipType === "External"
-        ? "border-blue-600 bg-gradient-to-br from-blue-50 to-white shadow-lg"
-        : "border-slate-200 bg-white"
-    }
-  `}
->
-  <div className="flex justify-between items-center">
-
-    <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center">
-      <Building2 className="text-blue-600" size={34} />
-    </div>
-
-    {internshipType === "External" && (
-      <CheckCircle2
-        className="text-blue-600"
-        size={32}
-      />
-    )}
-
-  </div>
-
-  <h2 className="text-2xl font-bold mt-6">
-    External Internship
-  </h2>
-
-  <p className="text-slate-500 mt-3 leading-7">
-    Already selected a company?
-    Submit your internship details,
-    upload the offer letter,
-    and request your NOC.
-  </p>
-
-</div>
-          {/* In House */}
-
-          <div
-            onClick={() => setInternshipType("In-House")}
-            className={`cursor-pointer rounded-2xl border p-6 transition-all duration-300 hover:shadow-lg
-            ${
-              internshipType === "In-House"
-                ? "border-blue-600 bg-blue-50"
-                : "border-slate-200 bg-white"
-            }`}
+            onClick={() => setInternshipType("External")}
+            className={`
+      relative
+      cursor-pointer
+      rounded-3xl
+      border
+      p-8
+      transition-all
+      duration-300
+      hover:-translate-y-2
+      hover:shadow-xl
+      ${
+        internshipType === "External"
+          ? "border-blue-600 bg-gradient-to-br from-blue-50 to-white shadow-lg"
+          : "border-slate-200 bg-white"
+      }
+    `}
           >
-
-            <div className="flex items-center justify-between">
-
-              <GraduationCap
-                size={34}
-                className="text-blue-600"
+            <div className="absolute top-6 right-6">
+              <CheckCircle2
+                size={30}
+                className={
+                  internshipType === "External"
+                    ? "text-blue-600"
+                    : "text-slate-300"
+                }
               />
-
-              {internshipType === "In-House" && (
-                <CheckCircle2
-                  className="text-blue-600"
-                  size={28}
-                />
-              )}
-
             </div>
 
-            <h2 className="text-xl font-bold mt-5">
+            <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mb-5">
+              <Building2 className="text-blue-600" size={34} />
+            </div>
+
+            <h2 className="text-3xl font-bold text-slate-800">
+              External Internship
+            </h2>
+
+            <p className="text-slate-500 mt-3 text-base leading-7">
+              Already selected a company? Submit your internship details, upload
+              the offer letter and request your NOC.
+            </p>
+          </div>
+
+          {/* In-House Internship */}
+          <div
+            onClick={() => setInternshipType("In-House")}
+            className={`
+      relative
+      cursor-pointer
+      rounded-3xl
+      border
+      p-8
+      transition-all
+      duration-300
+      hover:-translate-y-2
+      hover:shadow-xl
+      ${
+        internshipType === "In-House"
+          ? "border-blue-600 bg-gradient-to-br from-blue-50 to-white shadow-lg"
+          : "border-slate-200 bg-white"
+      }
+    `}
+          >
+            <div className="absolute top-6 right-6">
+              <CheckCircle2
+                size={30}
+                className={
+                  internshipType === "In-House"
+                    ? "text-blue-600"
+                    : "text-slate-300"
+                }
+              />
+            </div>
+
+            <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mb-5">
+              <GraduationCap className="text-blue-600" size={34} />
+            </div>
+
+            <h2 className="text-3xl font-bold text-slate-800">
               In-House Internship
             </h2>
 
-            <p className="text-slate-500 mt-2">
-              Apply for an internship organized
-              by your college.
+            <p className="text-slate-500 mt-3 text-base leading-7">
+              Apply for an internship organized by your college.
             </p>
+          </div>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Basic Information */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-md p-8">
+            <h2 className="text-2xl font-bold mb-6">Basic Information</h2>
 
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Department */}
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Department *
+                </label>
+
+                <select
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  className="w-full border border-slate-300 rounded-xl p-3"
+                >
+                  <option value="">Select Department</option>
+
+                  {departments.map((dept) => (
+                    <option key={dept._id} value={dept._id}>
+                      {dept.departmentName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Academic Session */}
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Academic Session *
+                </label>
+
+                <select
+                  name="academicSession"
+                  value={formData.academicSession}
+                  onChange={handleChange}
+                  className="w-full border border-slate-300 rounded-xl p-3"
+                >
+                  <option value="">Select Session</option>
+
+                  {sessions.map((session) => (
+                    <option key={session._id} value={session._id}>
+                      {session.sessionName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
 
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-8"
-        >
-
+          {/* External Internship */}
           {internshipType === "External" && (
             <>
-
               {/* Company Information */}
-
               <div className="bg-white rounded-2xl border border-slate-200 shadow-md p-8">
-
                 <div className="flex items-center gap-3 mb-6">
+                  <GraduationCap className="text-blue-600" size={28} />
 
-                  <GraduationCap
-                    className="text-blue-600"
-                    size={28}
-                  />
-
-                  <h2 className="text-2xl font-bold">
-                    Company Information
-                  </h2>
-
+                  <h2 className="text-2xl font-bold">Company Information</h2>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
-
                   <div>
-
                     <label className="block text-sm font-semibold mb-2">
                       Company Name *
                     </label>
@@ -200,11 +294,9 @@ const ApplyInternship = () => {
                       onChange={handleChange}
                       className="w-full border border-slate-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-
                   </div>
 
                   <div>
-
                     <label className="block text-sm font-semibold mb-2">
                       Company Address *
                     </label>
@@ -216,11 +308,9 @@ const ApplyInternship = () => {
                       onChange={handleChange}
                       className="w-full border border-slate-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-
                   </div>
 
                   <div>
-
                     <label className="block text-sm font-semibold mb-2">
                       HR Name
                     </label>
@@ -232,11 +322,9 @@ const ApplyInternship = () => {
                       onChange={handleChange}
                       className="w-full border border-slate-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-
                   </div>
 
                   <div>
-
                     <label className="block text-sm font-semibold mb-2">
                       HR Email
                     </label>
@@ -248,93 +336,39 @@ const ApplyInternship = () => {
                       onChange={handleChange}
                       className="w-full border border-slate-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-
                   </div>
-
                 </div>
-
               </div>
-
               {/* Internship Details */}
-
               <div className="bg-white rounded-2xl border border-slate-200 shadow-md p-8">
-
                 <div className="flex items-center gap-3 mb-6">
+                  <Briefcase size={28} className="text-blue-600" />
 
-                  <Briefcase
-                    size={28}
-                    className="text-blue-600"
-                  />
-
-                  <h2 className="text-2xl font-bold">
-                    Internship Details
-                  </h2>
-
+                  <h2 className="text-2xl font-bold">Internship Details</h2>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
-
                   <div>
-
                     <label className="block text-sm font-semibold mb-2">
                       Domain *
                     </label>
+                    <select
+                      name="domain"
+                      value={formData.domain}
+                      onChange={handleChange}
+                      className="w-full border border-slate-300 rounded-xl p-3"
+                    >
+                      <option value="">Select Domain</option>
 
-                   <select
-  name="domain"
-  value={formData.domain}
-  onChange={handleChange}
-  className="
-    w-full
-    border
-    border-slate-300
-    rounded-xl
-    p-3
-    bg-white
-    focus:outline-none
-    focus:ring-2
-    focus:ring-blue-500
-  "
->
-  <option value="">Select Domain</option>
-
-  <option value="Web Development">
-    Web Development
-  </option>
-
-  <option value="App Development">
-    App Development
-  </option>
-
-  <option value="Artificial Intelligence">
-    Artificial Intelligence
-  </option>
-
-  <option value="Machine Learning">
-    Machine Learning
-  </option>
-
-  <option value="Data Science">
-    Data Science
-  </option>
-
-  <option value="Cyber Security">
-    Cyber Security
-  </option>
-
-  <option value="Cloud Computing">
-    Cloud Computing
-  </option>
-
-  <option value="UI/UX">
-    UI / UX
-  </option>
-</select>
-
+                      {domains.map((domain) => (
+                        <option key={domain._id} value={domain._id}>
+                          {domain.domainName}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div>
-
                     <label className="block text-sm font-semibold mb-2">
                       Duration (Months)
                     </label>
@@ -346,11 +380,9 @@ const ApplyInternship = () => {
                       onChange={handleChange}
                       className="w-full border border-slate-300 rounded-xl p-3"
                     />
-
                   </div>
 
                   <div>
-
                     <label className="block text-sm font-semibold mb-2">
                       Start Date
                     </label>
@@ -362,11 +394,9 @@ const ApplyInternship = () => {
                       onChange={handleChange}
                       className="w-full border border-slate-300 rounded-xl p-3"
                     />
-
                   </div>
 
                   <div>
-
                     <label className="block text-sm font-semibold mb-2">
                       End Date
                     </label>
@@ -378,26 +408,15 @@ const ApplyInternship = () => {
                       onChange={handleChange}
                       className="w-full border border-slate-300 rounded-xl p-3"
                     />
-
                   </div>
-
                 </div>
-
-              </div>              {/* Documents */}
-
+              </div>{" "}
+              {/* Documents */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-md p-8">
-
                 <div className="flex items-center gap-3 mb-6">
+                  <Upload size={28} className="text-blue-600" />
 
-                  <Upload
-                    size={28}
-                    className="text-blue-600"
-                  />
-
-                  <h2 className="text-2xl font-bold">
-                    Documents
-                  </h2>
-
+                  <h2 className="text-2xl font-bold">Documents</h2>
                 </div>
 
                 <label className="block text-sm font-semibold mb-3">
@@ -421,26 +440,19 @@ const ApplyInternship = () => {
                     transition
                   "
                 >
-
-                  <Upload
-                    size={40}
-                    className="text-blue-600"
-                  />
+                  <Upload size={40} className="text-blue-600" />
 
                   <p className="mt-4 text-slate-600">
                     Click to upload your Offer Letter
                   </p>
 
-                  <p className="text-sm text-slate-400 mt-2">
-                    PDF only
-                  </p>
+                  <p className="text-sm text-slate-400 mt-2">PDF only</p>
 
                   {formData.offerLetter && (
                     <p className="mt-4 font-medium text-green-600">
                       {formData.offerLetter.name}
                     </p>
                   )}
-
                 </label>
 
                 <input
@@ -451,9 +463,7 @@ const ApplyInternship = () => {
                   onChange={handleChange}
                   className="hidden"
                 />
-
               </div>
-
               <button
                 type="submit"
                 className="
@@ -469,7 +479,6 @@ const ApplyInternship = () => {
               >
                 Request NOC
               </button>
-
             </>
           )}
 
@@ -478,44 +487,37 @@ const ApplyInternship = () => {
           {/* ========================= */}
 
           {internshipType === "In-House" && (
-
             <>
-
               <div className="bg-white rounded-2xl border border-slate-200 shadow-md p-8">
-
                 <div className="flex items-center gap-3 mb-6">
+                  <GraduationCap className="text-blue-600" size={34} />
 
-                  <GraduationCap
-                    size={28}
-                    className="text-blue-600"
-                  />
-
-                  <h2 className="text-2xl font-bold">
-                    In-House Internship
-                  </h2>
-
+                  <h2 className="text-2xl font-bold">In-House Internship</h2>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
-
                   <div>
-
                     <label className="block text-sm font-semibold mb-2">
                       Preferred Domain
                     </label>
 
-                    <input
-                      type="text"
+                    <select
                       name="domain"
                       value={formData.domain}
                       onChange={handleChange}
                       className="w-full border border-slate-300 rounded-xl p-3"
-                    />
+                    >
+                      <option value="">Select Domain</option>
 
+                      {domains.map((domain) => (
+                        <option key={domain._id} value={domain._id}>
+                          {domain.domainName}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div>
-
                     <label className="block text-sm font-semibold mb-2">
                       Duration (Months)
                     </label>
@@ -527,13 +529,10 @@ const ApplyInternship = () => {
                       onChange={handleChange}
                       className="w-full border border-slate-300 rounded-xl p-3"
                     />
-
                   </div>
-
                 </div>
 
                 <div className="mt-6">
-
                   <label className="block text-sm font-semibold mb-2">
                     Remarks
                   </label>
@@ -546,9 +545,7 @@ const ApplyInternship = () => {
                     className="w-full border border-slate-300 rounded-xl p-3"
                     placeholder="Write anything you want the admin to know..."
                   />
-
                 </div>
-
               </div>
 
               <button
@@ -566,32 +563,20 @@ const ApplyInternship = () => {
               >
                 Apply Internship
               </button>
-
             </>
-
           )}
-
         </form>
 
         {/* Application Process */}
 
         <div className="bg-white rounded-2xl border border-slate-200 shadow-md p-8">
-
           <div className="flex items-center gap-3 mb-6">
+            <FileText size={28} className="text-blue-600" />
 
-            <FileText
-              size={28}
-              className="text-blue-600"
-            />
-
-            <h2 className="text-2xl font-bold">
-              Application Process
-            </h2>
-
+            <h2 className="text-2xl font-bold">Application Process</h2>
           </div>
 
           <div className="space-y-5">
-
             <div className="flex items-center gap-4">
               <CheckCircle2 className="text-green-600" />
               <span>Fill Internship Application</span>
@@ -609,9 +594,7 @@ const ApplyInternship = () => {
 
             <div className="flex items-center gap-4">
               <CheckCircle2 className="text-green-600" />
-              <span>
-                NOC Issued (External Internship Only)
-              </span>
+              <span>NOC Issued (External Internship Only)</span>
             </div>
 
             <div className="flex items-center gap-4">
@@ -623,14 +606,10 @@ const ApplyInternship = () => {
               <CheckCircle2 className="text-green-600" />
               <span>Upload Completion Documents</span>
             </div>
-
           </div>
-
         </div>
-
       </div>
-
-    </DashboardLayout>
+  
   );
 };
 

@@ -1,8 +1,4 @@
-const Pagination = ({
-  currentPage = 1,
-  totalPages = 1,
-  onPageChange,
-}) => {
+const Pagination = ({ currentPage = 1, totalPages = 1, onPageChange }) => {
   if (totalPages <= 1) return null;
 
   const pages = [];
@@ -13,7 +9,6 @@ const Pagination = ({
 
   return (
     <div className="flex items-center justify-center gap-2 mt-6">
-
       <button
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
@@ -44,7 +39,6 @@ const Pagination = ({
       >
         Next
       </button>
-
     </div>
   );
 };

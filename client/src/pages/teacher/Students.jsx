@@ -17,7 +17,7 @@ const Students = () => {
       const response = await getTeacherStudents();
       setStudents(response.data || []);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -45,23 +45,10 @@ const Students = () => {
 
   return (
     <div className="space-y-6">
-
-      <div>
-        <h1 className="text-3xl font-bold text-slate-800">
-          Assigned Students
-        </h1>
-
-        <p className="text-slate-500 mt-1">
-          View and manage your assigned students.
-        </p>
-      </div>
+    
 
       <div className="relative max-w-md">
-
-        <Search
-          className="absolute left-3 top-3 text-slate-400"
-          size={18}
-        />
+        <Search className="absolute left-3 top-3 text-slate-400" size={18} />
 
         <input
           type="text"
@@ -81,13 +68,9 @@ const Students = () => {
             focus:outline-none
           "
         />
-
       </div>
 
-      <AssignedStudentsTable
-        students={filteredStudents}
-      />
-
+      <AssignedStudentsTable students={filteredStudents} />
     </div>
   );
 };

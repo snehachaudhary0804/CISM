@@ -1,6 +1,5 @@
 import { Eye } from "lucide-react";
 
-
 const getStatusColor = (status) => {
   switch (status) {
     case "Completed":
@@ -23,11 +22,9 @@ const getStatusColor = (status) => {
   }
 };
 const RecentApplications = ({ internships = [] }) => {
-
-return (
-
-<div
-className="
+  return (
+    <div
+      className="
 bg-white
 rounded-2xl
 border
@@ -36,13 +33,11 @@ shadow-md
  hover:shadow-xl transition-all duration-300
 overflow-hidden
 "
->
+    >
+      {/* Header */}
 
-
-{/* Header */}
-
-<div
-className="
+      <div
+        className="
 relative
 flex
 items-center
@@ -54,16 +49,10 @@ border-b
 border-slate-200
 
 "
->
-
-
-<div  className="text-center w-full ">
-
-
-
-
-<p
-className="
+      >
+        <div className="text-center w-full ">
+          <p
+            className="
 mt-2
 text-sm
 text-slate-500
@@ -71,17 +60,13 @@ text-slate-500
 
 
 "
->
-Latest submitted internship records
-</p>
+          >
+            Latest submitted internship records
+          </p>
+        </div>
 
-
-</div>
-
-
-
-<button
-className="
+        <button
+          className="
 px-4
 py-2
 rounded-xl
@@ -91,28 +76,18 @@ font-semibold
 hover:bg-blue-100
 transition
 "
->
-View All
-</button>
+        >
+          View All
+        </button>
+      </div>
 
+      {/* Table */}
 
-</div>
-
-
-
-
-{/* Table */}
-
-<div className="overflow-x-auto px-2">
-
-
-<table className="w-full min-w-[750px]">
-
-
-<thead>
-
-<tr
-className="
+      <div className="overflow-x-auto px-2">
+        <table className="w-full min-w-[750px]">
+          <thead>
+            <tr
+              className="
 text-left
 text-sm
 font-bold
@@ -120,98 +95,63 @@ text-slate-500
 uppercase 
 tracking-wide
 "
->
+            >
+              <th className="px-6 py-4">Student</th>
 
-<th className="px-6 py-4">
-Student
-</th>
+              <th className="px-6 py-4">Company</th>
 
-<th className="px-6 py-4">
-Company
-</th>
+              <th className="px-6 py-4">Type</th>
 
-<th className="px-6 py-4">
-Type
-</th>
+              <th className="px-6 py-4">Teacher</th>
 
-<th className="px-6 py-4">
-Teacher
-</th>
+              <th className="px-6 py-4">Status</th>
 
-<th className="px-6 py-4">
-Status
-</th>
+              <th className="px-6 py-4 text-center">Action</th>
+            </tr>
+          </thead>
 
-<th className="px-6 py-4 text-center">
-Action
-</th>
-
-
-</tr>
-
-</thead>
-
-
-
-<tbody>
-
-
-{
-internships.map((app)=>(
-
-<tr
-key={app._id}
-className="
+          <tbody>
+            {internships.map((app) => (
+              <tr
+                key={app._id}
+                className="
 border-t
 border-slate-100
 hover:bg-blue-50
 transition
 "
->
-
-
-<td
-className="
+              >
+                <td
+                  className="
 px-6
 py-5
 font-semibold
 text-slate-800
 whitespace-nowrap
 "
->
-{app.student?.name}
-</td>
+                >
+                  {app.student?.name}
+                </td>
 
-
-
-<td
-className="
+                <td
+                  className="
 px-6
 py-5
 whitespace-nowrap
 "
->
-{app.externalDetails?.companyName || "-"}
-</td>
+                >
+                  {app.externalDetails?.companyName || "-"}
+                </td>
 
+                <td className="px-6 py-5">{app.internshipType}</td>
 
+                <td className="px-6 py-5 whitespace-nowrap">
+                  {app.teacherAssignment?.teacher?.name || "Not Assigned"}
+                </td>
 
-<td className="px-6 py-5">
-{app.internshipType}
-</td>
-
-
-
-<td className="px-6 py-5 whitespace-nowrap">
-{app.teacherAssignment?.teacher?.name || "Not Assigned"}
-</td>
-
-
-
-<td className="px-6 py-5">
-
-<span
-className={`
+                <td className="px-6 py-5">
+                  <span
+                    className={`
 px-3
 py-1
 rounded-full
@@ -219,60 +159,30 @@ text-xs
 font-bold
 ${getStatusColor(app.status)}
 `}
->
-{app.status}
-</span>
+                  >
+                    {app.status}
+                  </span>
+                </td>
 
-</td>
-
-
-
-<td className="px-6 py-5 text-center">
-
-
-<button
-className="
+                <td className="px-6 py-5 text-center">
+                  <button
+                    className="
 p-2
 rounded-lg
 hover:bg-blue-100
 transition
 "
->
-
-<Eye
-size={19}
-className="text-blue-600"
-/>
-
-</button>
-
-
-</td>
-
-
-
-</tr>
-
-
-))
-}
-
-
-</tbody>
-
-
-</table>
-
-
-</div>
-
-
-
-</div>
-
-);
-
+                  >
+                    <Eye size={19} className="text-blue-600" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 };
-
 
 export default RecentApplications;

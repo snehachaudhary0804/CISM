@@ -15,10 +15,7 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
   }
 
   // Check role if roles are provided
-  if (
-    allowedRoles.length > 0 &&
-    !allowedRoles.includes(user.role)
-  ) {
+  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 

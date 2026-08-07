@@ -1,10 +1,5 @@
 import { Fragment, useState } from "react";
-import {
-  Eye,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-
+import { Eye, ChevronDown, ChevronUp } from "lucide-react";
 
 import InternshipExpanded from "./StudentExpand";
 
@@ -51,15 +46,10 @@ const StudentInternshipTable = ({ internships = [] }) => {
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-
       <div className="overflow-x-auto">
-
         <table className="min-w-full">
-
           <thead className="bg-blue-50 border-b border-blue-100">
-
             <tr>
-
               <th className="px-6 py-4 text-left text-sm font-bold text-blue-700">
                 Company
               </th>
@@ -87,28 +77,20 @@ const StudentInternshipTable = ({ internships = [] }) => {
               <th className="px-6 py-4 text-center text-sm font-bold text-blue-700">
                 Action
               </th>
-
             </tr>
-
           </thead>
 
           <tbody>
-
             {internships.map((item) => (
-
               <Fragment key={item._id}>
-
                 <tr className="border-b border-slate-200 hover:bg-slate-50">
-
                   <td className="px-6 py-5 font-semibold text-slate-800">
                     {item.internshipType === "External"
-                     ? item.externalDetails?.companyName
-                     : item.inHouseDetails?.projectTitle}
+                      ? item.externalDetails?.companyName
+                      : item.inHouseDetails?.projectTitle}
                   </td>
 
-                  <td className="px-6 py-5">
-                    {item.domain?.domainName}
-                  </td>
+                  <td className="px-6 py-5">{item.domain?.domainName}</td>
 
                   <td className="px-6 py-5 text-center">
                     <span className="bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full">
@@ -118,14 +100,16 @@ const StudentInternshipTable = ({ internships = [] }) => {
 
                   <td className="px-6 py-5">
                     {item.internshipType === "External"
-                      ? `${new Date(item.externalDetails?.startDate)
-                            .toLocaleDateString()} - ${new Date(item.externalDetails?.endDate)
-                                .toLocaleDateString()}`
+                      ? `${new Date(
+                          item.externalDetails?.startDate,
+                        ).toLocaleDateString()} - ${new Date(
+                          item.externalDetails?.endDate,
+                        ).toLocaleDateString()}`
                       : `${item.inHouseDetails?.startDate} - ${item.inHouseDetails?.endDate}`}
                   </td>
 
                   <td className="px-6 py-5">
-                     {item.teacherAssignment?.teacher?.name || "Not Assigned"}
+                    {item.teacherAssignment?.teacher?.name || "Not Assigned"}
                   </td>
 
                   <td className="px-6 py-5 text-center">
@@ -133,7 +117,6 @@ const StudentInternshipTable = ({ internships = [] }) => {
                   </td>
 
                   <td className="px-6 py-5 text-center">
-
                     <button
                       onClick={() => toggleExpand(item._id)}
                       className="
@@ -150,46 +133,28 @@ const StudentInternshipTable = ({ internships = [] }) => {
                       "
                     >
                       <Eye size={16} />
-
                       View
-
                       {expandedId === item._id ? (
                         <ChevronUp size={16} />
                       ) : (
                         <ChevronDown size={16} />
                       )}
-
                     </button>
-
                   </td>
-
                 </tr>
 
                 {expandedId === item._id && (
-
-                      <tr>
-
-                         <td
-                            colSpan={7}
-                            className="bg-slate-50 p-6"
-                         >
-                         <InternshipExpanded internship={item} />
-                       </td>
-
-                     </tr>
-
-                    )}
-
+                  <tr>
+                    <td colSpan={7} className="bg-slate-50 p-6">
+                      <InternshipExpanded internship={item} />
+                    </td>
+                  </tr>
+                )}
               </Fragment>
-
             ))}
-
           </tbody>
-
         </table>
-
       </div>
-
     </div>
   );
 };

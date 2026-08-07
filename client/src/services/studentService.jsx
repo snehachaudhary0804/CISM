@@ -1,16 +1,10 @@
 import api from "./api";
 
-
 export const getStudentDashboard = async () => {
-
-  const response = await api.get(
-    "/student/dashboard"
-  );
+  const response = await api.get("/student/dashboard");
 
   return response.data;
-
 };
-
 
 export const getMyInternships = async () => {
   const response = await api.get("/internships/my-internship");
@@ -28,16 +22,12 @@ export const uploadOfferLetter = async (internshipId, formData) => {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
 
   return response.data;
 };
-export const uploadCompletionDocument = async (
-  internshipId,
-  formData
-) => {
-
+export const uploadCompletionDocument = async (internshipId, formData) => {
   const { data } = await api.patch(
     `/internships/${internshipId}/completion-document`,
     formData,
@@ -45,7 +35,7 @@ export const uploadCompletionDocument = async (
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
 
   return data;

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const StudentSettings = () => {
-
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -14,19 +13,13 @@ const StudentSettings = () => {
 
   return (
     <DashboardLayout>
-
       <div className="p-6">
-
-        <h1 className="text-2xl font-bold text-blue-700 mb-6">
-          Settings
-        </h1>
+        <h1 className="text-2xl font-bold text-blue-700 mb-6">Settings</h1>
 
         <div className="space-y-6">
-
           {/* Change Password */}
 
           <div className="bg-white rounded-xl shadow-md p-6">
-
             <h2 className="text-lg font-bold text-slate-800">
               Change Password
             </h2>
@@ -49,16 +42,12 @@ const StudentSettings = () => {
             >
               Change Password
             </button>
-
           </div>
 
           {/* Logout */}
 
           <div className="bg-white rounded-xl shadow-md p-6">
-
-            <h2 className="text-lg font-bold text-red-600">
-              Logout
-            </h2>
+            <h2 className="text-lg font-bold text-red-600">Logout</h2>
 
             <p className="text-sm text-slate-500 mt-2">
               Sign out from your account.
@@ -78,13 +67,9 @@ const StudentSettings = () => {
             >
               Logout
             </button>
-
           </div>
-
         </div>
-
       </div>
-
     </DashboardLayout>
   );
 };

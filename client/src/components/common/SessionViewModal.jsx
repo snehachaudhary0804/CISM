@@ -4,7 +4,6 @@ const SessionViewModal = ({ show, onClose, session }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="relative w-full max-w-xl rounded-2xl bg-white p-6 shadow-xl">
-
         {/* Header */}
         <div className="mb-6 flex items-center justify-between border-b pb-4">
           <h2 className="text-2xl font-bold text-slate-800">
@@ -21,7 +20,6 @@ const SessionViewModal = ({ show, onClose, session }) => {
 
         {/* Body */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-
           <div>
             <label className="text-sm font-semibold text-slate-500">
               Session Name
@@ -80,7 +78,6 @@ const SessionViewModal = ({ show, onClose, session }) => {
                 : "-"}
             </p>
           </div>
-
         </div>
 
         {/* Footer */}
@@ -92,7 +89,6 @@ const SessionViewModal = ({ show, onClose, session }) => {
             Close
           </button>
         </div>
-
       </div>
     </div>
   );

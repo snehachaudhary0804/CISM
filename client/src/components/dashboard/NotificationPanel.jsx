@@ -1,10 +1,4 @@
-import {
-  CheckCircle2,
-  Clock3,
-  Bell,
-  FileText,
-  UserPlus,
-} from "lucide-react";
+import { CheckCircle2, Clock3, Bell, FileText, UserPlus } from "lucide-react";
 
 const notifications = [
   {
@@ -44,11 +38,9 @@ const notifications = [
 const NotificationPanel = () => {
   return (
     <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-
       {/* Header */}
 
       <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-200 dark:border-slate-800">
-
         <Bell className="text-blue-600" />
 
         <div>
@@ -60,13 +52,11 @@ const NotificationPanel = () => {
             Latest updates from the system
           </p>
         </div>
-
       </div>
 
       {/* Notification List */}
 
       <div className="max-h-[420px] overflow-y-auto">
-
         {notifications.map((item) => {
           const Icon = item.icon;
 
@@ -101,30 +91,20 @@ const NotificationPanel = () => {
               </div>
 
               <div className="flex-1">
-
                 <div className="flex justify-between items-start">
-
                   <h3 className="font-semibold text-slate-800 dark:text-white">
                     {item.title}
                   </h3>
 
-                  <span className="text-xs text-slate-400">
-                    {item.time}
-                  </span>
-
+                  <span className="text-xs text-slate-400">{item.time}</span>
                 </div>
 
-                <p className="mt-2 text-sm text-slate-500">
-                  {item.message}
-                </p>
-
+                <p className="mt-2 text-sm text-slate-500">{item.message}</p>
               </div>
             </div>
           );
         })}
-
       </div>
-
     </div>
   );
 };

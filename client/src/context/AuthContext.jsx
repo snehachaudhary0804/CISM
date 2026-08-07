@@ -1,35 +1,22 @@
-import {
-  createContext,
-  useContext,
-  useState,
-} from "react";
+import { createContext, useContext, useState } from "react";
 
 import { loginUser } from "../services/authService";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("user"))
-  );
-
-  const [token, setToken] = useState(
-    localStorage.getItem("token")
-  );
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
   const [loading] = useState(false);
 
   const login = async (credentials) => {
-
     const data = await loginUser(credentials);
 
     localStorage.setItem("token", data.token);
 
-    localStorage.setItem(
-      "user",
-      JSON.stringify(data.user)
-    );
+    localStorage.setItem("user", JSON.stringify(data.user));
 
     setToken(data.token);
 
@@ -39,7 +26,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-
     localStorage.removeItem("token");
 
     localStorage.removeItem("user");
@@ -47,11 +33,9 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
 
     setUser(null);
-
   };
 
   return (
-
     <AuthContext.Provider
       value={{
         user,
@@ -64,9 +48,7 @@ export const AuthProvider = ({ children }) => {
     >
       {children}
     </AuthContext.Provider>
-
   );
-
 };
 
 export const useAuth = () => useContext(AuthContext);

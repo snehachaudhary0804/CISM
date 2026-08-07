@@ -21,7 +21,6 @@ const StatCard = ({
         overflow-hidden
       "
     >
-
       <div
         className="
           flex
@@ -30,10 +29,8 @@ const StatCard = ({
           gap-5
         "
       >
-
         {/* Text */}
         <div className="flex-1 min-w-0">
-
           <p
             className="
               text-sm
@@ -49,7 +46,6 @@ const StatCard = ({
             {title}
           </p>
 
-
           <h2
             className="
               
@@ -62,11 +58,7 @@ const StatCard = ({
           >
             {value}
           </h2>
-
-
         </div>
-
-
 
         {/* Icon */}
 
@@ -82,17 +74,9 @@ const StatCard = ({
             flex-shrink-0
           `}
         >
-
-          <Icon
-            size={28}
-            className={iconColor}
-          />
-
+          <Icon size={28} className={iconColor} />
         </div>
-
-
       </div>
-
     </div>
   );
 };
