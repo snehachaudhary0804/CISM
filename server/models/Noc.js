@@ -17,33 +17,61 @@ const nocSchema = new mongoose.Schema(
     issuedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+
+    // NOC Details
+    nocNumber: {
+      type: String,
+      required: true,
+      unique: true,
     },
 
     issueDate: {
       type: Date,
+      required: true,
     },
 
+    validTill: {
+      type: Date,
+      required: true,
+    },
+
+    hodName: {
+      type: String,
+      required: true,
+    },
+
+    remarks: {
+      type: String,
+      default: "",
+    },
+
+    // Generated PDF
     nocFile: {
       type: String,
+      default: "",
     },
 
     status: {
       type: String,
       enum: ["Pending", "Issued"],
-      default: "Pending",
+      default: "Issued",
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
+
+// One NOC per internship
 nocSchema.index(
-    {
-        internship: 1,
-        student: 1
-    },
-    {
-        unique: true
-    }
+  {
+    internship: 1,
+  },
+  {
+    unique: true,
+  },
 );
+
 module.exports = mongoose.model("NOC", nocSchema);

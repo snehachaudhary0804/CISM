@@ -8,11 +8,10 @@ const domainSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-    
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 module.exports = mongoose.model("Domain", domainSchema);

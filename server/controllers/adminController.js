@@ -4,81 +4,105 @@ const Section = require("../models/Section");
 const AcademicSession = require("../models/AcademicSession");
 const Domain = require("../models/Domain");
 const Internship = require("../models/Internship");
-const Notification = require("../models/Notification");
-
 
 exports.getAllStudents = async (req, res) => {
   try {
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      department,
+      section,
+      semester,
+      academicSession,
+      status,
+    } = req.query;
 
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-
-    const skip = (page - 1) * limit;
-
-    const { search, department, section } = req.query;
-
-    const filter = {
+    const query = {
       role: "student",
     };
 
+    // Search
     if (search) {
-      filter.$or = [
+      query.$or = [
         { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
         { rollNumber: { $regex: search, $options: "i" } },
       ];
     }
 
-    if (department) {
-      filter.department = department;
+    // Filters
+    if (department) query.department = department;
+    if (section) query.section = section;
+    if (semester) query.semester = Number(semester);
+    if (academicSession) query.academicSession = academicSession;
+
+    if (status) {
+      query.status = status;
     }
 
-    if (section) {
-      filter.section = section;
-    }
+    const skip = (Number(page) - 1) * Number(limit);
 
-    const students = await User.find(filter)
-      .populate("department")
-      .populate("section")
-      .populate("academicSession")
+    const students = await User.find(query)
+      .populate("department", "departmentName")
+      .populate("section", "sectionName")
+      .populate("academicSession", "sessionName")
+      .select("-password")
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(Number(limit));
+    const updatedStudents = await Promise.all(
+      students.map(async (student) => {
+        const internship = await Internship.findOne({
+          student: student._id,
+        }).populate("teacherAssignment.teacher", "name");
 
-    const totalStudents = await User.countDocuments(filter);
+        return {
+          ...student.toObject(),
+          assignedTeacher: internship?.teacherAssignment?.teacher || null,
+        };
+      }),
+    );
+    const totalStudents = await User.countDocuments(query);
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
-
+      students: updatedStudents,
       pagination: {
         totalStudents,
-        currentPage: page,
-        totalPages: Math.ceil(totalStudents / limit),
-        limit,
+        currentPage: Number(page),
+        totalPages: Math.ceil(totalStudents / Number(limit)),
+        limit: Number(limit),
       },
-
-      data: students,
     });
-
   } catch (error) {
+    console.error(error);
 
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Failed to fetch students",
     });
-
   }
 };
 exports.getStudentById = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid student ID",
+      });
+    }
     const student = await User.findOne({
       _id: id,
-      role: "student",
+      role: "Student",
     })
-      .populate("department", "departmentName departmentCode")
-      .populate("section", "sectionName")
-      .populate("academicSession", "sessionName");
+      .populate("department", "name")
+      .populate("section", "name")
+      .populate("academicSession", "name")
+      .select("-password");
 
     if (!student) {
       return res.status(404).json({
@@ -87,16 +111,24 @@ exports.getStudentById = async (req, res) => {
       });
     }
 
+    const internship = await Internship.findOne({
+      student: id,
+    })
+      .populate("teacher", "name employeeId")
+      .populate("domain", "name")
+      .sort({ createdAt: -1 });
+
     res.status(200).json({
       success: true,
       student,
+      internship,
     });
   } catch (error) {
     console.error(error);
 
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: "Failed to fetch student details",
     });
   }
 };
@@ -104,19 +136,27 @@ exports.updateStudent = async (req, res) => {
   try {
     const { id } = req.params;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid student ID",
+      });
+    }
+
     const {
       name,
       email,
+      phone,
       department,
       section,
-      academicSession,
       semester,
+      academicSession,
       status,
     } = req.body;
 
     const student = await User.findOne({
       _id: id,
-      role: "student",
+      role: "Student",
     });
 
     if (!student) {
@@ -126,20 +166,24 @@ exports.updateStudent = async (req, res) => {
       });
     }
 
-    if (name) student.name = name;
-    if (email) student.email = email;
-    if (department) student.department = department;
-    if (section) student.section = section;
-    if (academicSession) student.academicSession = academicSession;
-    if (semester) student.semester = semester;
-    if (status) student.status = status;
+    // Update fields
+    if (name !== undefined) student.name = name;
+    if (email !== undefined) student.email = email;
+    if (phone !== undefined) student.phone = phone;
+    if (department !== undefined) student.department = department;
+    if (section !== undefined) student.section = section;
+    if (semester !== undefined) student.semester = semester;
+    if (academicSession !== undefined)
+      student.academicSession = academicSession;
+    if (status !== undefined) student.status = status;
 
     await student.save();
 
     const updatedStudent = await User.findById(student._id)
-      .populate("department", "departmentName departmentCode")
-      .populate("section", "sectionName")
-      .populate("academicSession", "sessionName");
+      .populate("department", "name")
+      .populate("section", "name")
+      .populate("academicSession", "name")
+      .select("-password");
 
     return res.status(200).json({
       success: true,
@@ -151,7 +195,7 @@ exports.updateStudent = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: "Failed to update student",
     });
   }
 };
@@ -159,9 +203,16 @@ exports.deleteStudent = async (req, res) => {
   try {
     const { id } = req.params;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid student ID",
+      });
+    }
+
     const student = await User.findOne({
       _id: id,
-      role: "student",
+      role: "Student",
     });
 
     if (!student) {
@@ -171,7 +222,9 @@ exports.deleteStudent = async (req, res) => {
       });
     }
 
-    await User.findByIdAndDelete(id);
+    student.status = "Inactive";
+
+    await student.save();
 
     return res.status(200).json({
       success: true,
@@ -182,13 +235,10 @@ exports.deleteStudent = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: "Failed to delete student",
     });
   }
 };
-
-
-
 exports.getAllTeachers = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
@@ -262,13 +312,7 @@ exports.getTeacherById = async (req, res) => {
 exports.updateTeacher = async (req, res) => {
   try {
     const { id } = req.params;
-
-    const {
-      name,
-      email,
-      employeeId,
-      department,
-    } = req.body;
+    const { name, email, phone, department, isActive } = req.body;
 
     const teacher = await User.findOne({
       _id: id,
@@ -278,25 +322,38 @@ exports.updateTeacher = async (req, res) => {
     if (!teacher) {
       return res.status(404).json({
         success: false,
-        message: "Teacher not found",
+        message: "Teacher not found.",
       });
     }
 
-    if (name) teacher.name = name;
-    if (email) teacher.email = email;
-    if (employeeId) teacher.employeeId = employeeId;
-    if (department) teacher.department = department;
+    // Check email uniqueness
+    if (email && email !== teacher.email) {
+      const existing = await User.findOne({ email });
+
+      if (existing) {
+        return res.status(400).json({
+          success: false,
+          message: "Email already exists.",
+        });
+      }
+    }
+
+    teacher.name = name ?? teacher.name;
+    teacher.email = email ?? teacher.email;
+    teacher.phone = phone ?? teacher.phone;
+    teacher.department = department ?? teacher.department;
+
+    if (typeof isActive === "boolean") {
+      teacher.isActive = isActive;
+      teacher.status = isActive ? "Active" : "Inactive";
+    }
 
     await teacher.save();
 
-    const updatedTeacher = await User.findById(id)
-      .select("-password")
-      .populate("department", "departmentName departmentCode");
-
     return res.status(200).json({
       success: true,
-      message: "Teacher updated successfully",
-      teacher: updatedTeacher,
+      message: "Teacher updated successfully.",
+      teacher,
     });
   } catch (error) {
     console.error(error);
@@ -319,15 +376,15 @@ exports.deleteTeacher = async (req, res) => {
     if (!teacher) {
       return res.status(404).json({
         success: false,
-        message: "Teacher not found",
+        message: "Teacher not found.",
       });
     }
 
-    await User.findByIdAndDelete(id);
+    await teacher.deleteOne();
 
     return res.status(200).json({
       success: true,
-      message: "Teacher deleted successfully",
+      message: "Teacher deleted successfully.",
     });
   } catch (error) {
     console.error(error);
@@ -339,109 +396,148 @@ exports.deleteTeacher = async (req, res) => {
   }
 };
 
-
-
-exports.assignTeacher = async (req, res) => {
+exports.getAllInternships = async (req, res) => {
   try {
-    const { studentId, teacherId } = req.body;
+    const { search, status, department, teacher, type } = req.query;
 
-    if (!studentId || !teacherId) {
-      return res.status(400).json({
-        success: false,
-        message: "Student ID and Teacher ID are required",
-      });
+    const filter = {};
+
+    if (status) filter.status = status;
+
+    if (department) filter.department = department;
+
+    if (type) filter.internshipType = type;
+
+    if (teacher) filter["teacherAssignment.teacher"] = teacher;
+
+    let internships = await Internship.find(filter)
+      .populate("student", "name rollNumber email")
+      .populate("department", "departmentName")
+      .populate("domain", "domainName")
+      .populate("teacherAssignment.teacher", "name")
+      .populate("noc");
+
+    if (search) {
+      internships = internships.filter((i) =>
+        i.student?.name?.toLowerCase().includes(search.toLowerCase()),
+      );
     }
-
-    // Check student
-    const student = await User.findOne({
-      _id: studentId,
-      role: "student",
-    });
-
-    if (!student) {
-      return res.status(404).json({
-        success: false,
-        message: "Student not found",
-      });
-    }
-
-    // Check teacher
-    const teacher = await User.findOne({
-      _id: teacherId,
-      role: "teacher",
-    });
-
-    if (!teacher) {
-      return res.status(404).json({
-        success: false,
-        message: "Teacher not found",
-      });
-    }
-
-    // Student already assigned?
-    if (student.assignedTeacher) {
-      return res.status(400).json({
-        success: false,
-        message: "Student already has an assigned teacher",
-      });
-    }
-
-    // Maximum 10 students per teacher
-    const totalAssigned = await User.countDocuments({
-      role: "student",
-      assignedTeacher: teacherId,
-    });
-
-    if (totalAssigned >= 10) {
-      return res.status(400).json({
-        success: false,
-        message: "Teacher already has maximum students assigned",
-      });
-    }
-
-    // Optional: Same department validation
-    if (
-      student.department &&
-      teacher.department &&
-      student.department.toString() !== teacher.department.toString()
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Student and Teacher belong to different departments",
-      });
-    }
-
-    // Assign teacher
-    student.assignedTeacher = teacherId;
-    await student.save();
-
-    // Notification for student
-    await Notification.create({
-      receiver: student._id,
-      title: "Teacher Assigned",
-      message: `You have been assigned to ${teacher.name}.`,
-      type: "System",
-    });
-
-    // Notification for teacher
-    await Notification.create({
-      receiver: teacher._id,
-      title: "New Student Assigned",
-      message: `${student.name} has been assigned to you.`,
-      type: "System",
-    });
 
     return res.status(200).json({
       success: true,
-      message: "Teacher assigned successfully",
+      internships,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.rejectInternship = async (req, res) => {
+  try {
+    const { internshipId } = req.params;
+
+    const { remarks } = req.body;
+
+    const internship = await Internship.findById(internshipId);
+
+    if (!internship) {
+      return res.status(404).json({
+        success: false,
+        message: "Internship not found",
+      });
+    }
+
+    internship.status = "Rejected";
+    internship.noc.status = "Rejected";
+    internship.rejectionReason = remarks;
+    internship.noc.remark = remarks;
+    await internship.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Internship rejected successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+exports.completeInternship = async (req, res) => {
+  try {
+    const { internshipId } = req.params;
+
+    const internship = await Internship.findById(internshipId);
+
+    if (!internship) {
+      return res.status(404).json({
+        success: false,
+        message: "Internship not found",
+      });
+    }
+
+    if (internship.teacherReview.status !== "Approved") {
+      return res.status(400).json({
+        success: false,
+        message: "Teacher review is not approved.",
+      });
+    }
+
+    internship.status = "Completed";
+    internship.completion.status = "Completed";
+
+    await internship.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Internship completed successfully.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+exports.approveInternship = async (req, res) => {
+  try {
+    const { internshipId } = req.params;
+
+    const internship = await Internship.findById(internshipId);
+
+    if (!internship) {
+      return res.status(404).json({
+        success: false,
+        message: "Internship not found",
+      });
+    }
+
+    if (internship.status === "Approved") {
+      return res.status(400).json({
+        success: false,
+        message: "Internship already approved.",
+      });
+    }
+
+    internship.status = "Approved";
+
+    await internship.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Internship approved successfully.",
+      data: internship,
     });
   } catch (error) {
     console.error(error);
 
     return res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: error.message,
     });
   }
 };
-

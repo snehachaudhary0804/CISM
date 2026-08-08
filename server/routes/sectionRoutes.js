@@ -2,17 +2,14 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    createSection,
-    getAllSections,
-    getSectionById,
-    updateSection,
-    deleteSection
+  createSection,
+  getAllSections,
+  getSectionById,
+  updateSection,
+  deleteSection,
 } = require("../controllers/sectionController");
 
-const {
-    auth,
-    isAdmin
-} = require("../middleware/authMiddleware");
+const { auth, isAdmin } = require("../middleware/authMiddleware");
 
 // Create Section
 router.post("/", auth, isAdmin, createSection);

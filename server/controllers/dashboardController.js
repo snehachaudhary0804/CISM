@@ -3,10 +3,10 @@ const Internship = require("../models/Internship");
 const Department = require("../models/Department");
 const Section = require("../models/Section");
 const NOC = require("../models/NOC");
-const Notification = require("../models/Notification");
 exports.adminDashboard = async (req, res) => {
-  try {
+  
 
+  try {
     // ===========================
     // Overview Counts
     // ===========================
@@ -17,12 +17,14 @@ exports.adminDashboard = async (req, res) => {
       totalDepartments,
       totalSections,
       totalInternships,
-      pendingInternships,
-      approvedInternships,
-      rejectedInternships,
+      nocPending,
+      nocApproved,
+      teacherAssigned,
+      teacherApproved,
+      completed,
+      rejected,
       pendingNOC,
       issuedNOC,
-      totalNotifications,
     ] = await Promise.all([
       User.countDocuments({ role: "student" }),
       User.countDocuments({ role: "teacher" }),
@@ -30,18 +32,14 @@ exports.adminDashboard = async (req, res) => {
       Section.countDocuments(),
       Internship.countDocuments(),
 
+      Internship.countDocuments({ status: "NOC Pending" }),
+      Internship.countDocuments({ status: "NOC Approved" }),
       Internship.countDocuments({
-        status: "Pending",
+        "teacherAssignment.teacher": { $ne: null },
       }),
-
-      Internship.countDocuments({
-        status: "Teacher Approved",
-      }),
-
-      Internship.countDocuments({
-        status: "Rejected",
-      }),
-
+      Internship.countDocuments({ status: "Approved" }),
+      Internship.countDocuments({ status: "Completed" }),
+      Internship.countDocuments({ status: "Rejected" }),
       NOC.countDocuments({
         status: "Pending",
       }),
@@ -49,27 +47,7 @@ exports.adminDashboard = async (req, res) => {
       NOC.countDocuments({
         status: "Issued",
       }),
-
-      Notification.countDocuments(),
     ]);
-
-
-
-    // ===========================
-    // Recent Internships
-    // ===========================
-
-    const recentInternships = await Internship.find()
-      .populate("student", "name rollNumber")
-      .populate(
-        "teacherAssignment.teacher",
-        "name employeeId"
-      )
-      .populate("domain", "domainName")
-      .sort({ createdAt: -1 })
-      .limit(5);
-
-
 
     // ===========================
     // Recent NOCs
@@ -80,17 +58,18 @@ exports.adminDashboard = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(5);
 
-
-
     // ===========================
-    // Recent Notifications
+    // Recent Internships
     // ===========================
 
-    const recentNotifications = await Notification.find()
-      .populate("receiver", "name role")
+    const recentInternships = await Internship.find()
+      .populate("student", "name rollNumber")
+      .populate("department", "departmentName")
+      .populate("domain", "domainName")
+      .populate("teacherAssignment.teacher", "name")
       .sort({ createdAt: -1 })
       .limit(5);
-          // ===========================
+    // ===========================
     // Department Statistics
     // ===========================
 
@@ -138,10 +117,7 @@ exports.adminDashboard = async (req, res) => {
                 input: "$internships",
                 as: "internship",
                 cond: {
-                  $eq: [
-                    "$$internship.status",
-                    "Teacher Approved",
-                  ],
+                  $eq: ["$$internship.status", "Approved"],
                 },
               },
             },
@@ -153,10 +129,7 @@ exports.adminDashboard = async (req, res) => {
                 input: "$internships",
                 as: "internship",
                 cond: {
-                  $eq: [
-                    "$$internship.status",
-                    "Pending",
-                  ],
+                  $eq: ["$$internship.status", "NOC Pending"],
                 },
               },
             },
@@ -168,10 +141,7 @@ exports.adminDashboard = async (req, res) => {
                 input: "$internships",
                 as: "internship",
                 cond: {
-                  $eq: [
-                    "$$internship.status",
-                    "Rejected",
-                  ],
+                  $eq: ["$$internship.status", "Rejected"],
                 },
               },
             },
@@ -184,7 +154,7 @@ exports.adminDashboard = async (req, res) => {
         },
       },
     ]);
-        // ===========================
+    // ===========================
     // Teacher Statistics
     // ===========================
 
@@ -194,7 +164,6 @@ exports.adminDashboard = async (req, res) => {
 
     const teacherStats = await Promise.all(
       teachers.map(async (teacher) => {
-
         const internships = await Internship.find({
           "teacherAssignment.teacher": teacher._id,
         });
@@ -207,21 +176,20 @@ exports.adminDashboard = async (req, res) => {
           assignedStudents: internships.length,
 
           pendingReviews: internships.filter(
-            i => i.status === "Pending"
+            (i) => i.status === "Teacher Assigned",
           ).length,
 
           approvedInternships: internships.filter(
-            i => i.status === "Teacher Approved"
+            (i) => i.status === "Approved",
           ).length,
 
           rejectedInternships: internships.filter(
-            i => i.status === "Rejected"
+            (i) => i.status === "Rejected",
           ).length,
         };
-
-      })
+      }),
     );
-        // ===========================
+    // ===========================
     // Domain Statistics
     // ===========================
 
@@ -258,7 +226,7 @@ exports.adminDashboard = async (req, res) => {
         },
       },
     ]);
-        // ===========================
+    // ===========================
     // Monthly Analytics
     // ===========================
 
@@ -285,7 +253,16 @@ exports.adminDashboard = async (req, res) => {
         },
       },
     ]);
-
+    const internshipTypeStats = await Internship.aggregate([
+      {
+        $group: {
+          _id: "$internshipType",
+          total: {
+            $sum: 1,
+          },
+        },
+      },
+    ]);
     const monthNames = [
       "",
       "January",
@@ -302,18 +279,16 @@ exports.adminDashboard = async (req, res) => {
       "December",
     ];
 
-    const formattedMonthlyAnalytics =
-      monthlyAnalytics.map((item) => ({
-        year: item._id.year,
-        monthNumber: item._id.month,
-        month: monthNames[item._id.month],
-        totalInternships: item.totalInternships,
-      }));
-          return res.status(200).json({
+    const formattedMonthlyAnalytics = monthlyAnalytics.map((item) => ({
+      year: item._id.year,
+      monthNumber: item._id.month,
+      month: monthNames[item._id.month],
+      totalInternships: item.totalInternships,
+    }));
+    return res.status(200).json({
       success: true,
 
       data: {
-
         overview: {
           totalStudents,
           totalTeachers,
@@ -322,21 +297,41 @@ exports.adminDashboard = async (req, res) => {
 
           totalInternships,
 
-          pendingInternships,
-          approvedInternships,
-          rejectedInternships,
+          teacherAssigned, // Pending Internship Reviews
+
+          nocPending,
+          nocApproved,
+          teacherApproved,
+          completed,
+          rejected,
 
           pendingNOC,
           issuedNOC,
-
-          totalNotifications,
         },
+        approvalChart: [
+          {
+            name: "NOC Approved",
+            value: nocApproved,
+          },
+          {
+            name: "Teacher Approved",
+            value: teacherApproved,
+          },
+          {
+            name: "Rejected",
+            value: rejected,
+          },
+        ],
+
+        departmentChart: departmentStats.map((item) => ({
+          name: item.departmentCode,
+          value: item.totalInternships,
+        })),
+        internshipTypeStats,
 
         recentInternships,
 
         recentNOCs,
-
-        recentNotifications,
 
         departmentStats,
 
@@ -345,16 +340,13 @@ exports.adminDashboard = async (req, res) => {
         domainStats,
 
         monthlyAnalytics: formattedMonthlyAnalytics,
-
       },
     });
-
   } catch (error) {
-
+   console.error(error);
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };

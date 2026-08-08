@@ -28,19 +28,15 @@ exports.createDomain = async (req, res) => {
       message: "Domain created successfully.",
       data: domain,
     });
-
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };
 exports.getAllDomains = async (req, res) => {
   try {
-
     const domains = await Domain.find().sort({ domainName: 1 });
 
     return res.status(200).json({
@@ -48,19 +44,15 @@ exports.getAllDomains = async (req, res) => {
       count: domains.length,
       data: domains,
     });
-
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };
 exports.getDomainById = async (req, res) => {
   try {
-
     const domain = await Domain.findById(req.params.id);
 
     if (!domain) {
@@ -74,19 +66,15 @@ exports.getDomainById = async (req, res) => {
       success: true,
       data: domain,
     });
-
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };
 exports.updateDomain = async (req, res) => {
   try {
-
     const { domainName } = req.body;
 
     const domain = await Domain.findById(req.params.id);
@@ -121,19 +109,15 @@ exports.updateDomain = async (req, res) => {
       message: "Domain updated successfully.",
       data: domain,
     });
-
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };
 exports.deleteDomain = async (req, res) => {
   try {
-
     const domain = await Domain.findById(req.params.id);
 
     if (!domain) {
@@ -149,13 +133,10 @@ exports.deleteDomain = async (req, res) => {
       success: true,
       message: "Domain deleted successfully.",
     });
-
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };

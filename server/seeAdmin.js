@@ -7,7 +7,7 @@ const User = require("./models/User");
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
+  .catch((err) => console.error(err));
 
 async function createAdmin() {
   try {
@@ -33,11 +33,11 @@ async function createAdmin() {
     });
 
     console.log("Admin created successfully");
-    console.log(admin);
+    
 
     process.exit();
   } catch (error) {
-    console.log(error);
+    console.error(err);
     process.exit();
   }
 }

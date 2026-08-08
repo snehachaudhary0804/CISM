@@ -2,26 +2,23 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    createNOC,
-    getAllNOCs,
-    getNOCById,
-    issueNOC,
-    deleteNOC
+  createNOC,
+  getAllNOCs,
+  getNOCById,
+  issueNOC,
+  deleteNOC,
 } = require("../controllers/nocController");
 
-const {
-    auth,
-    isAdmin
-} = require("../middleware/authMiddleware");
+const { auth, isAdmin } = require("../middleware/authMiddleware");
 
 // Create NOC
 router.post("/", auth, isAdmin, createNOC);
 
 // Get All NOCs
-router.get("/", auth,isAdmin, getAllNOCs);
+router.get("/", auth, isAdmin, getAllNOCs);
 
 // Get NOC By ID
-router.get("/:id", auth,isAdmin, getNOCById);
+router.get("/:id", auth, isAdmin, getNOCById);
 
 // Issue NOC
 router.put("/:id/issue", auth, isAdmin, issueNOC);

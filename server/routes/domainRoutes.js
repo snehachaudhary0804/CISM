@@ -9,10 +9,7 @@ const {
   deleteDomain,
 } = require("../controllers/domainController");
 
-const {
-  auth,
-  isAdmin,
-} = require("../middleware/authMiddleware");
+const { auth, isAdmin } = require("../middleware/authMiddleware");
 
 // Admin Routes
 router.post("/", auth, isAdmin, createDomain);
