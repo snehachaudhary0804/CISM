@@ -2,7 +2,7 @@ const User = require("../models/User");
 const Internship = require("../models/Internship");
 const Department = require("../models/Department");
 const Section = require("../models/Section");
-const NOC = require("../models/NOC");
+const NOC = require("../models/Noc");
 exports.adminDashboard = async (req, res) => {
   
 

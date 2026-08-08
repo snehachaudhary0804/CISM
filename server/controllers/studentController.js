@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const Internship = require("../models/Internship");
-const NOC = require("../models/NOC");
+const NOC = require("../models/Noc");
 const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
 exports.getDashboard = async (req, res) => {
