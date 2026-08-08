@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const NOC = require("../models/NOC");
+const NOC = require("../models/Noc");
 const Internship = require("../models/Internship");
 const User = require("../models/User");
 const generateNOC = require("../utils/generateNOC");
